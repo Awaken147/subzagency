@@ -17,7 +17,6 @@ import {
   Shield,
   Smartphone,
   Sparkles,
-  Camera,
   ArrowRight,
   Home,
   Clock,
@@ -707,7 +706,7 @@ Thank you.`;
                         className="relative z-10 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
+                        transition={{ delay: 0.5, duration: 0.8 }}
                       >
                         <h4
                           className="text-xl font-extrabold sm:text-2xl"
@@ -716,43 +715,54 @@ Thank you.`;
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
+                            textShadow: '0 0 40px rgba(57,255,20,0.2)',
+                            filter: 'drop-shadow(0 0 20px rgba(57,255,20,0.15))',
                           }}
                         >
-                          Payment Submitted Successfully
+                          Thank You For Choosing SubzAgency
                         </h4>
                       </motion.div>
 
-                      {/* Verification badges */}
+                      {/* Status badge */}
                       <motion.div
-                        className="relative z-10 flex flex-wrap items-center justify-center gap-3"
+                        className="relative z-10"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6 }}
                       >
-                        <div
-                          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
+                        <motion.div
+                          className="inline-flex items-center gap-2 rounded-full px-4 py-2"
                           style={{
-                            background: 'rgba(57,255,20,0.08)',
+                            background: 'linear-gradient(135deg, rgba(57,255,20,0.08), rgba(0,240,255,0.08))',
                             border: '1px solid rgba(57,255,20,0.2)',
+                            boxShadow: '0 0 20px rgba(57,255,20,0.08)',
+                          }}
+                          animate={{
+                            boxShadow: [
+                              '0 0 20px rgba(57,255,20,0.08)',
+                              '0 0 30px rgba(57,255,20,0.15)',
+                              '0 0 20px rgba(57,255,20,0.08)',
+                            ],
+                          }}
+                          transition={{
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
                           }}
                         >
-                          <Clock size={12} className="text-neon-green" />
-                          <span className="text-xs font-medium text-neon-green">
-                            Final verification required
+                          <Clock size={13} className="text-neon-green" />
+                          <span
+                            className="text-xs font-semibold"
+                            style={{
+                              background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                            }}
+                          >
+                            Project Review In Progress
                           </span>
-                        </div>
-                        <div
-                          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
-                          style={{
-                            background: 'rgba(0,240,255,0.08)',
-                            border: '1px solid rgba(0,240,255,0.2)',
-                          }}
-                        >
-                          <Camera size={12} className="text-neon-cyan" />
-                          <span className="text-xs font-medium text-neon-cyan">
-                            Screenshot needed
-                          </span>
-                        </div>
+                        </motion.div>
                       </motion.div>
 
                       {/* Professional message card */}
@@ -760,7 +770,7 @@ Thank you.`;
                         className="relative z-10 w-full"
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
+                        transition={{ delay: 0.7, duration: 0.6 }}
                       >
                         <div
                           className="rounded-xl p-5"
@@ -770,16 +780,27 @@ Thank you.`;
                           }}
                         >
                           <p className="text-sm leading-relaxed text-muted-foreground">
-                            Thank you for choosing{' '}
-                            <span className="font-semibold text-neon-green">SubzAgency</span>.
+                            Your payment details and project request have been received successfully.
                           </p>
                           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                            To verify your payment and begin your project instantly, please send a{' '}
-                            <span className="font-semibold text-foreground">screenshot of the successful payment</span>{' '}
-                            on WhatsApp.
+                            Our team will now review your payment screenshot and contact you shortly on WhatsApp to discuss your{' '}
+                            <span className="font-semibold text-foreground">project requirements, timeline, and final planning</span>.
                           </p>
                           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                            Our team will review your payment and contact you shortly to start your project.
+                            Your project process will begin after payment verification is completed.
+                          </p>
+                          <p className="mt-3 text-sm leading-relaxed">
+                            <span
+                              style={{
+                                background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text',
+                                fontWeight: 600,
+                              }}
+                            >
+                              We're excited to build something amazing for your business.
+                            </span>
                           </p>
                         </div>
                       </motion.div>
@@ -830,7 +851,7 @@ Thank you.`;
                       >
                         <ShieldCheck size={14} className="text-neon-green/60" />
                         <span className="text-xs text-muted-foreground/60">
-                          Your payment is being verified securely
+                          Your project request has been securely received
                         </span>
                       </motion.div>
 
