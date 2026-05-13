@@ -71,7 +71,7 @@ const plans: PricingPlan[] = [
     scaleUp: true,
   },
   {
-    name: 'Growth 3D Experience Website',
+    name: 'Growth 3D Website',
     price: '₹49,999',
     priceAmount: 49999,
     features: [
@@ -89,7 +89,7 @@ const plans: PricingPlan[] = [
     buttonStyle: 'outline',
   },
   {
-    name: 'Premium 3D Brand Experience',
+    name: 'Premium 3D Business Experience',
     price: '₹89,999',
     priceAmount: 89999,
     badge: 'PREMIUM',

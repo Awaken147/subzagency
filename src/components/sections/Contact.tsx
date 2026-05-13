@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle,
   Instagram,
@@ -12,6 +12,9 @@ import {
   User,
   Phone,
   Building2,
+  Loader2,
+  AlertCircle,
+  X,
 } from 'lucide-react';
 import ScrollReveal from '@/components/effects/ScrollReveal';
 import GlowCard from '@/components/effects/GlowCard';
@@ -80,6 +83,8 @@ interface FormData {
   message: string;
 }
 
+type SubmitState = 'idle' | 'sending' | 'success' | 'error';
+
 export default function Contact() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -88,14 +93,38 @@ export default function Contact() {
     businessType: '',
     message: '',
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitState, setSubmitState] = useState<SubmitState>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
+    if (submitState === 'sending') return;
+
+    setSubmitState('sending');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          businessType: formData.businessType,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      setSubmitState('success');
+      // Clear form after success
       setFormData({
         name: '',
         email: '',
@@ -103,7 +132,20 @@ export default function Contact() {
         businessType: '',
         message: '',
       });
-    }, 3000);
+
+      // Auto-reset success state after 8 seconds
+      setTimeout(() => {
+        setSubmitState('idle');
+      }, 8000);
+    } catch (err) {
+      setSubmitState('error');
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to send message. Please try again.');
+    }
+  };
+
+  const resetForm = () => {
+    setSubmitState('idle');
+    setErrorMessage('');
   };
 
   const inputClass = (field: string) =>
@@ -216,135 +258,246 @@ export default function Contact() {
                 Send us a Message
               </h3>
 
-              {isSubmitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center py-12 text-center"
-                >
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neon-green/10">
-                    <CheckCircle2 className="h-8 w-8 text-neon-green" />
-                  </div>
-                  <h4 className="mb-2 text-lg font-bold text-neon-green">
-                    Message Sent!
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    We&apos;ll get back to you within 24 hours.
-                  </p>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Name */}
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Name"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      onFocus={() => setFocusedField('name')}
-                      onBlur={() => setFocusedField(null)}
-                      className={`${inputClass('name')} pl-10`}
-                    />
-                    <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
-                      Your Name
-                    </label>
-                  </div>
-
-                  {/* Email */}
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      onFocus={() => setFocusedField('email')}
-                      onBlur={() => setFocusedField(null)}
-                      className={`${inputClass('email')} pl-10`}
-                    />
-                    <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
-                      Email Address
-                    </label>
-                  </div>
-
-                  {/* Phone */}
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="tel"
-                      placeholder="Phone"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      onFocus={() => setFocusedField('phone')}
-                      onBlur={() => setFocusedField(null)}
-                      className={`${inputClass('phone')} pl-10`}
-                    />
-                    <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
-                      Phone Number
-                    </label>
-                  </div>
-
-                  {/* Business Type */}
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <div
-                      className={`${focusedField === 'businessType' ? 'border-neon-green/30 ring-2 ring-neon-green/20' : 'border-white/10'} ml-0 rounded-lg border transition-all duration-300`}
-                    >
-                      <Select
-                        value={formData.businessType}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, businessType: value })
-                        }
-                      >
-                        <SelectTrigger className="w-full border-0 bg-transparent pl-10 text-sm text-foreground focus:ring-0 focus:outline-none">
-                          <SelectValue placeholder="Select Business Type" />
-                        </SelectTrigger>
-                        <SelectContent className="border-white/10 bg-dark-navy">
-                          {businessTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Message */}
-                  <div className="relative">
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Tell us about your project..."
-                      value={formData.message}
-                      onChange={(e) =>
-                        setFormData({ ...formData, message: e.target.value })
-                      }
-                      onFocus={() => setFocusedField('message')}
-                      onBlur={() => setFocusedField(null)}
-                      className={`${inputClass('message')} resize-none`}
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <MagneticButton
-                    type="submit"
-                    className="group relative flex w-full items-center justify-center gap-2 rounded-lg bg-neon-green px-6 py-3 text-sm font-semibold text-deep-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]"
+              <AnimatePresence mode="wait">
+                {/* ===== SUCCESS STATE ===== */}
+                {submitState === 'success' && (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex flex-col items-center justify-center py-12 text-center"
                   >
-                    <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    Send Message
-                  </MagneticButton>
-                </form>
-              )}
+                    {/* Animated success ring */}
+                    <motion.div
+                      className="relative mb-6 flex h-20 w-20 items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+                    >
+                      {/* Pulsing glow */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full"
+                        style={{ border: '2px solid rgba(57,255,20,0.2)' }}
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.5, 0.15, 0.5],
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                      {/* Main circle */}
+                      <div
+                        className="relative flex h-16 w-16 items-center justify-center rounded-full"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(57,255,20,0.12), rgba(0,240,255,0.08))',
+                          border: '2px solid rgba(57,255,20,0.3)',
+                          boxShadow: '0 0 30px rgba(57,255,20,0.15)',
+                        }}
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}
+                        >
+                          <CheckCircle2 className="h-8 w-8 text-neon-green" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+
+                    <motion.h4
+                      className="mb-2 text-lg font-bold"
+                      style={{
+                        background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      Message Sent Successfully
+                    </motion.h4>
+                    <motion.p
+                      className="max-w-xs text-sm leading-relaxed text-muted-foreground"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      Your message has been sent successfully. Our team will contact you shortly regarding your project inquiry.
+                    </motion.p>
+
+                    <motion.button
+                      onClick={resetForm}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="mt-6 rounded-lg border border-white/10 px-5 py-2 text-xs font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground hover:border-white/20"
+                    >
+                      Send Another Message
+                    </motion.button>
+                  </motion.div>
+                )}
+
+                {/* ===== FORM STATE ===== */}
+                {submitState !== 'success' && (
+                  <motion.form
+                    key="form"
+                    onSubmit={handleSubmit}
+                    className="space-y-5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {/* Name */}
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="text"
+                        required
+                        placeholder="Name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        onFocus={() => setFocusedField('name')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`${inputClass('name')} pl-10`}
+                        disabled={submitState === 'sending'}
+                      />
+                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                        Your Name
+                      </label>
+                    </div>
+
+                    {/* Email */}
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`${inputClass('email')} pl-10`}
+                        disabled={submitState === 'sending'}
+                      />
+                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                        Email Address
+                      </label>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="tel"
+                        placeholder="Phone"
+                        value={formData.phone}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                        onFocus={() => setFocusedField('phone')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`${inputClass('phone')} pl-10`}
+                        disabled={submitState === 'sending'}
+                      />
+                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                        Phone Number
+                      </label>
+                    </div>
+
+                    {/* Business Type */}
+                    <div className="relative">
+                      <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <div
+                        className={`${focusedField === 'businessType' ? 'border-neon-green/30 ring-2 ring-neon-green/20' : 'border-white/10'} ml-0 rounded-lg border transition-all duration-300`}
+                      >
+                        <Select
+                          value={formData.businessType}
+                          onValueChange={(value) =>
+                            setFormData({ ...formData, businessType: value })
+                          }
+                          disabled={submitState === 'sending'}
+                        >
+                          <SelectTrigger className="w-full border-0 bg-transparent pl-10 text-sm text-foreground focus:ring-0 focus:outline-none">
+                            <SelectValue placeholder="Select Business Type" />
+                          </SelectTrigger>
+                          <SelectContent className="border-white/10 bg-dark-navy">
+                            {businessTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <div className="relative">
+                      <textarea
+                        required
+                        rows={4}
+                        placeholder="Tell us about your project..."
+                        value={formData.message}
+                        onChange={(e) =>
+                          setFormData({ ...formData, message: e.target.value })
+                        }
+                        onFocus={() => setFocusedField('message')}
+                        onBlur={() => setFocusedField(null)}
+                        className={`${inputClass('message')} resize-none`}
+                        disabled={submitState === 'sending'}
+                      />
+                    </div>
+
+                    {/* Error message */}
+                    <AnimatePresence>
+                      {submitState === 'error' && errorMessage && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5, height: 0 }}
+                          animate={{ opacity: 1, y: 0, height: 'auto' }}
+                          exit={{ opacity: 0, y: -5, height: 0 }}
+                          className="flex items-center gap-2.5 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3"
+                        >
+                          <AlertCircle size={16} className="shrink-0 text-red-400" />
+                          <p className="text-xs text-red-400">{errorMessage}</p>
+                          <button
+                            onClick={resetForm}
+                            className="ml-auto shrink-0 text-red-400/50 transition-colors hover:text-red-400"
+                          >
+                            <X size={14} />
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Submit Button */}
+                    <MagneticButton
+                      type="submit"
+                      strength={submitState === 'sending' ? 0 : 6}
+                      className="group relative flex w-full items-center justify-center gap-2 rounded-lg bg-neon-green px-6 py-3.5 text-sm font-semibold text-deep-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(57,255,20,0.4)] disabled:opacity-70 disabled:cursor-not-allowed"
+                      disabled={submitState === 'sending'}
+                    >
+                      {submitState === 'sending' ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          <span>Sending Message...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          <span>Send Message</span>
+                        </>
+                      )}
+                    </MagneticButton>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </div>
           </ScrollReveal>
         </div>
