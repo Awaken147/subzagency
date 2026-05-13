@@ -65,22 +65,22 @@ export default function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? 'glass-strong shadow-lg shadow-black/20'
-            : 'bg-transparent'
+            : 'bg-[#050510]/60 backdrop-blur-sm'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
           {/* Logo */}
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, '#home')}
-            className="flex items-center gap-1 text-xl font-bold tracking-tight sm:text-2xl"
+            className="flex items-center gap-1 text-lg font-bold tracking-tight sm:text-2xl"
           >
             <span className="text-glow-green text-[#39ff14]">Subz</span>
             <span className="text-white">Agency</span>
           </a>
 
           {/* Desktop Nav */}
-          <div className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-0.5 lg:flex">
             {navLinks.map((link) => {
               const sectionId = link.href.replace('#', '');
               const isActive = activeSection === sectionId;
@@ -89,7 +89,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`relative rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                  className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? 'text-[#39ff14]'
                       : 'text-gray-400 hover:text-white'
@@ -114,9 +114,9 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <MagneticButton
-              className="rounded-lg bg-[#39ff14] px-6 py-2 text-sm font-semibold text-[#050510] transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(57,255,20,0.4)]"
+              className="rounded-lg bg-[#39ff14] px-5 py-2 text-sm font-semibold text-[#050510] transition-shadow duration-300 hover:shadow-[0_0_20px_rgba(57,255,20,0.4)]"
               onClick={() => {
                 const el = document.getElementById('contact');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -128,7 +128,7 @@ export default function Navbar() {
 
           {/* Mobile Hamburger */}
           <button
-            className="relative z-50 p-2 text-white md:hidden"
+            className="relative z-50 p-2 text-white lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
@@ -143,7 +143,7 @@ export default function Navbar() {
           <>
             {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -152,7 +152,7 @@ export default function Navbar() {
 
             {/* Menu Panel */}
             <motion.div
-              className="fixed right-0 top-0 z-40 flex h-full w-[280px] flex-col bg-[#0a0a1a]/95 backdrop-blur-xl md:hidden"
+              className="fixed right-0 top-0 z-40 flex h-full w-[280px] flex-col bg-[#0a0a1a]/95 backdrop-blur-xl lg:hidden"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}

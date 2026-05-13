@@ -18,6 +18,7 @@ interface PricingPlan {
   price: string;
   priceAmount: number;
   priceSubtext?: string;
+  typeLabel: string;
   features: PricingFeature[];
   badge?: string;
   badgeColor?: string;
@@ -35,6 +36,7 @@ const plans: PricingPlan[] = [
     name: 'Simple Landing Page',
     price: '₹9,999',
     priceAmount: 9999,
+    typeLabel: 'Landing Page Website',
     features: [
       { text: '1-page modern landing page' },
       { text: 'Clean premium UI' },
@@ -52,6 +54,7 @@ const plans: PricingPlan[] = [
     name: 'Starter 3D Business Website',
     price: '₹24,999',
     priceAmount: 24999,
+    typeLabel: '3D Business Website',
     badge: 'POPULAR',
     badgeColor: '#39ff14',
     features: [
@@ -74,6 +77,7 @@ const plans: PricingPlan[] = [
     name: 'Growth 3D Website',
     price: '₹49,999',
     priceAmount: 49999,
+    typeLabel: 'Advanced 3D Website',
     features: [
       { text: 'Advanced 3D animations' },
       { text: 'Interactive Three.js experiences' },
@@ -92,6 +96,7 @@ const plans: PricingPlan[] = [
     name: 'Premium 3D Business Experience',
     price: '₹89,999',
     priceAmount: 89999,
+    typeLabel: 'Enterprise 3D Experience',
     badge: 'PREMIUM',
     badgeColor: '#ff6600',
     features: [
@@ -112,9 +117,10 @@ const plans: PricingPlan[] = [
   },
   {
     name: 'Custom Enterprise 3D Solution',
-    price: 'DM For Custom Quote',
+    price: 'Custom Pricing',
     priceAmount: 0,
     priceSubtext: 'No fixed pricing',
+    typeLabel: 'Custom Enterprise Solution',
     badge: 'ENTERPRISE',
     badgeColor: '#39ff14',
     features: [
@@ -162,9 +168,11 @@ function PricingCard({
           <div
             className="absolute -inset-[1px] rounded-2xl overflow-hidden"
             style={{
-              background:
+              backgroundImage:
                 'linear-gradient(135deg, #39ff14, #00f0ff, #a855f7, #ff6600, #39ff14)',
               backgroundSize: '300% 300%',
+              backgroundPosition: '0% 50%',
+              backgroundRepeat: 'no-repeat',
               animation: 'gradient-shift 4s ease infinite',
             }}
           />
@@ -172,14 +180,14 @@ function PricingCard({
 
         <GlowCard
           glowColor={plan.glowColor}
-          className={`relative h-full p-6 sm:p-8 ${
+          className={`relative h-full p-5 sm:p-6 lg:p-8 ${
             plan.isEnterprise ? 'z-10' : ''
           } ${plan.scaleUp ? 'sm:pb-10' : ''}`}
         >
           {/* Badge */}
           {plan.badge && (
             <motion.div
-              className="mb-5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+              className="mb-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider"
               style={{
                 backgroundColor: `${plan.badgeColor}15`,
                 border: `1px solid ${plan.badgeColor}30`,
@@ -207,21 +215,21 @@ function PricingCard({
               }
             >
               {plan.isEnterprise && (
-                <Sparkles size={12} style={{ color: plan.badgeColor }} />
+                <Sparkles size={10} className="sm:text-xs" style={{ color: plan.badgeColor }} />
               )}
               {plan.badge}
             </motion.div>
           )}
 
           {/* Plan Name */}
-          <h3 className="text-white font-bold text-xl sm:text-2xl mb-2 leading-tight">
+          <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 leading-tight">
             {plan.name}
           </h3>
 
           {/* Price */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <span
-              className="text-3xl sm:text-4xl font-extrabold"
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold"
               style={{
                 color: plan.neonAccent,
                 textShadow: `0 0 20px ${plan.neonAccent}40, 0 0 40px ${plan.neonAccent}20`,
@@ -230,7 +238,7 @@ function PricingCard({
               {plan.price}
             </span>
             {plan.priceSubtext && (
-              <p className="text-muted-foreground text-sm mt-1">
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
                 {plan.priceSubtext}
               </p>
             )}
@@ -238,23 +246,25 @@ function PricingCard({
 
           {/* Divider */}
           <div
-            className="h-px mb-6"
+            className="h-px mb-4 sm:mb-6"
             style={{
-              background: `linear-gradient(90deg, transparent, ${plan.neonAccent}30, transparent)`,
+              backgroundImage: `linear-gradient(90deg, transparent, ${plan.neonAccent}30, transparent)`,
+              backgroundSize: '100% 1px',
+              backgroundRepeat: 'no-repeat',
             }}
           />
 
           {/* Features */}
-          <ul className="space-y-3 mb-8">
+          <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
             {plan.features.map((feature) => (
-              <li key={feature.text} className="flex items-start gap-3">
+              <li key={feature.text} className="flex items-start gap-2 sm:gap-3">
                 <Check
-                  size={18}
+                  size={16}
                   className={`mt-0.5 shrink-0 ${
                     checkColorMap[plan.neonAccent] || 'text-neon-green'
                   }`}
                 />
-                <span className="text-muted-foreground text-sm leading-relaxed">
+                <span className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
                   {feature.text}
                 </span>
               </li>
@@ -266,7 +276,7 @@ function PricingCard({
             onClick={() => onGetStarted(plan)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className={`block w-full text-center py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-300 cursor-pointer ${
+            className={`block w-full text-center py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 cursor-pointer ${
               plan.buttonStyle === 'filled'
                 ? 'text-deep-black'
                 : plan.buttonStyle === 'special'
@@ -282,8 +292,7 @@ function PricingCard({
                   }
                 : plan.buttonStyle === 'special'
                   ? {
-                      background:
-                        'linear-gradient(135deg, #39ff14, #00f0ff)',
+                      backgroundImage: 'linear-gradient(135deg, #39ff14, #00f0ff)',
                       boxShadow:
                         '0 0 20px rgba(57, 255, 20, 0.2), 0 0 40px rgba(0, 240, 255, 0.1)',
                     }
@@ -314,55 +323,61 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative py-24 sm:py-32 overflow-hidden"
+      className="relative py-16 sm:py-24 lg:py-32 overflow-hidden"
       style={{
-        background:
+        backgroundImage:
           'linear-gradient(180deg, #050510 0%, #0a0a1a 30%, #0f0a1a 60%, #050510 100%)',
+        backgroundSize: '100% 100%',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Subtle animated gradient orbs */}
       <div
-        className="pointer-events-none absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-10"
+        className="pointer-events-none absolute top-0 left-1/4 w-64 sm:w-96 h-64 sm:h-96 rounded-full opacity-10"
         style={{
-          background:
+          backgroundImage:
             'radial-gradient(circle, rgba(57, 255, 20, 0.15) 0%, transparent 70%)',
+          backgroundSize: '100% 100%',
+          backgroundRepeat: 'no-repeat',
           animation: 'aurora 12s ease-in-out infinite',
         }}
       />
       <div
-        className="pointer-events-none absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-10"
+        className="pointer-events-none absolute bottom-0 right-1/4 w-64 sm:w-96 h-64 sm:h-96 rounded-full opacity-10"
         style={{
-          background:
+          backgroundImage:
             'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
+          backgroundSize: '100% 100%',
+          backgroundRepeat: 'no-repeat',
           animation: 'aurora 12s ease-in-out infinite 4s',
         }}
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <ScrollReveal className="text-center mb-16 sm:mb-20">
-          <span className="inline-block text-neon-green uppercase tracking-widest text-sm font-medium mb-4 text-glow-green">
+        <ScrollReveal className="text-center mb-10 sm:mb-16 lg:mb-20">
+          <span className="inline-block text-neon-green uppercase tracking-widest text-xs sm:text-sm font-medium mb-3 sm:mb-4 text-glow-green">
             Pricing
           </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6">
             Invest in Your{' '}
             <span className="gradient-text">Digital Future</span>
           </h2>
-          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-muted-foreground text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
             Transparent pricing, no hidden costs. Choose the package that fits
             your vision.
           </p>
         </ScrollReveal>
 
         {/* Pricing Cards - First 3 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 items-start">
           {plans.slice(0, 3).map((plan, index) => (
             <PricingCard key={plan.name} plan={plan} index={index} onGetStarted={handleGetStarted} />
           ))}
         </div>
 
         {/* Pricing Cards - Last 2 centered */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-3xl mx-auto items-start">
           {plans.slice(3).map((plan, index) => (
             <PricingCard key={plan.name} plan={plan} index={index + 3} onGetStarted={handleGetStarted} />
           ))}
@@ -378,6 +393,7 @@ export default function Pricing() {
         packagePriceAmount={selectedPlan.priceAmount}
         packageFeatures={selectedPlan.features.map((f) => f.text)}
         packageType="website"
+        packageTypeLabel={selectedPlan.typeLabel}
       />
     </section>
   );

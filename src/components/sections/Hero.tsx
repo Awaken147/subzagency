@@ -151,8 +151,10 @@ function ThreeDText() {
         style={{
           fontSize: 'clamp(3rem, 10vw, 8rem)',
           lineHeight: 1,
-          background: 'linear-gradient(135deg, #39ff14 0%, #00f0ff 40%, #a855f7 70%, #39ff14 100%)',
+          backgroundImage: 'linear-gradient(135deg, #39ff14 0%, #00f0ff 40%, #a855f7 70%, #39ff14 100%)',
           backgroundSize: '300% 300%',
+          backgroundPosition: '0% 50%',
+          backgroundRepeat: 'no-repeat',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -175,7 +177,7 @@ function ThreeDText() {
         <span
           className="absolute inset-0 rounded-lg pointer-events-none"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)',
+            backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -259,7 +261,7 @@ export default function Hero() {
             variants={wordVariants}
             className="inline-block"
             style={{
-              background: 'linear-gradient(135deg, #00f0ff, #0066ff)',
+              backgroundImage: 'linear-gradient(135deg, #00f0ff, #0066ff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',

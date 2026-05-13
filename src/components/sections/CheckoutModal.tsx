@@ -34,6 +34,7 @@ interface CheckoutModalProps {
   packagePriceAmount: number;
   packageFeatures?: string[];
   packageType?: 'website' | 'hosting';
+  packageTypeLabel?: string;
 }
 
 type PaymentStep = 'form' | 'payment' | 'confirmation';
@@ -210,6 +211,7 @@ export default function CheckoutModal({
   packagePriceAmount,
   packageFeatures = [],
   packageType = 'website',
+  packageTypeLabel,
 }: CheckoutModalProps) {
   const [step, setStep] = useState<PaymentStep>('form');
   const [formData, setFormData] = useState<FormData>({
@@ -223,10 +225,15 @@ export default function CheckoutModal({
 
   const isCustomQuote = packagePriceAmount === 0;
 
+  // Resolve the display type label: use explicit label if provided, otherwise fallback
+  const displayTypeLabel = packageTypeLabel || (packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package');
+
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (isCustomQuote) {
-      setStep('confirmation');
+      // For custom quotes, open WhatsApp directly for discussion
+      const msg = generateCustomQuoteMessage();
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
       return;
     }
     setStep('payment');
@@ -242,7 +249,7 @@ Project Details:
 - Business Name: ${formData.businessName}
 - Selected Package: ${packageName}
 - Package Price: ${packagePrice}
-- Package Type: ${packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package'}
+- Package Type: ${displayTypeLabel}
 - Email: ${formData.email}
 - Phone Number: ${formData.phone}
 ${formData.requirements ? `- Requirements: ${formData.requirements}` : ''}
@@ -273,6 +280,7 @@ Client Details:
 
 Selected Package:
 - Package Name: ${packageName}
+- Package Type: ${displayTypeLabel}
 - Package Price: ${packagePrice}
 
 I would like to discuss:
@@ -282,6 +290,28 @@ OR
 - Other installment/payment options
 
 Please guide me further.
+
+Thank you.`;
+  };
+
+  const generateCustomQuoteMessage = () => {
+    return `Hello SubzAgency,
+
+I'm interested in a custom enterprise solution and would like to discuss the project scope and pricing.
+
+Client Details:
+- Name: ${formData.name}
+- Business Name: ${formData.businessName}
+- Email: ${formData.email}
+- Phone: ${formData.phone}
+${formData.requirements ? `- Requirements: ${formData.requirements}` : ''}
+
+I would like to discuss:
+- Custom project scope
+- Flexible payment options
+- Timeline and deliverables
+
+Please contact me to discuss further.
 
 Thank you.`;
   };
@@ -372,10 +402,12 @@ Thank you.`;
               <div
                 className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none"
                 style={{
-                  background: step === 'confirmation'
+                  backgroundImage: step === 'confirmation'
                     ? 'linear-gradient(135deg, rgba(57,255,20,0.12), transparent, rgba(0,240,255,0.12))'
                     : 'linear-gradient(135deg, rgba(57,255,20,0.08), transparent, rgba(0,240,255,0.08))',
                   backgroundSize: '200% 200%',
+                  backgroundPosition: '0% 50%',
+                  backgroundRepeat: 'no-repeat',
                   animation: 'gradient-shift 4s ease infinite',
                 }}
               />
@@ -493,7 +525,7 @@ Thank you.`;
                         whileTap={{ scale: 0.98 }}
                         className="w-full rounded-xl bg-neon-green py-3.5 text-sm font-bold text-deep-black transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
                       >
-                        {isCustomQuote ? 'Contact Us on WhatsApp' : 'Proceed to Payment'}
+                        {isCustomQuote ? 'Discuss Custom Project on WhatsApp' : 'Proceed to Payment'}
                       </motion.button>
 
                       {/* Selected Package Summary — dynamic recap */}
@@ -696,7 +728,7 @@ Thank you.`;
                             }}
                             className="group relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-semibold transition-all duration-500"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(15,15,35,0.95), rgba(15,15,35,0.95)), linear-gradient(135deg, #00f0ff, #39ff14)',
+                              backgroundImage: 'linear-gradient(135deg, rgba(15,15,35,0.95), rgba(15,15,35,0.95)), linear-gradient(135deg, #00f0ff, #39ff14)',
                               border: '1.5px solid transparent',
                               backgroundOrigin: 'border-box',
                               backgroundClip: 'padding-box, border-box',
@@ -717,8 +749,10 @@ Thank you.`;
                             <span
                               className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                               style={{
-                                background: 'linear-gradient(105deg, transparent 40%, rgba(0,240,255,0.1) 45%, rgba(57,255,20,0.1) 55%, transparent 60%)',
+                                backgroundImage: 'linear-gradient(105deg, transparent 40%, rgba(0,240,255,0.1) 45%, rgba(57,255,20,0.1) 55%, transparent 60%)',
                                 backgroundSize: '250% 100%',
+                                backgroundPosition: '0% 0%',
+                                backgroundRepeat: 'no-repeat',
                                 animation: 'shimmer 2.5s linear infinite',
                               }}
                             />
@@ -727,7 +761,7 @@ Thank you.`;
                               <span
                                 className="transition-all duration-300"
                                 style={{
-                                  background: 'linear-gradient(135deg, #00f0ff, #39ff14)',
+                                  backgroundImage: 'linear-gradient(135deg, #00f0ff, #39ff14)',
                                   WebkitBackgroundClip: 'text',
                                   WebkitTextFillColor: 'transparent',
                                   backgroundClip: 'text',
@@ -799,7 +833,7 @@ Thank you.`;
                         <h4
                           className="text-xl font-extrabold sm:text-2xl"
                           style={{
-                            background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                            backgroundImage: 'linear-gradient(135deg, #39ff14, #00f0ff)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
@@ -842,7 +876,7 @@ Thank you.`;
                           <span
                             className="text-xs font-semibold"
                             style={{
-                              background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                              backgroundImage: 'linear-gradient(135deg, #39ff14, #00f0ff)',
                               WebkitBackgroundClip: 'text',
                               WebkitTextFillColor: 'transparent',
                               backgroundClip: 'text',
@@ -880,7 +914,7 @@ Thank you.`;
                           <p className="mt-3 text-sm leading-relaxed">
                             <span
                               style={{
-                                background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                                backgroundImage: 'linear-gradient(135deg, #39ff14, #00f0ff)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 backgroundClip: 'text',
@@ -913,11 +947,11 @@ Thank you.`;
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Type</span>
-                            <span className="text-foreground">{packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package'}</span>
+                            <span className="text-foreground">{displayTypeLabel}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">{isCustomQuote ? 'Amount' : 'Amount Paid'}</span>
-                            <span className="font-bold text-neon-green">{packagePrice}</span>
+                            <span className="font-bold text-neon-green">{isCustomQuote ? 'Custom Pricing' : packagePrice}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Name</span>

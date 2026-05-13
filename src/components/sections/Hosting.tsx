@@ -27,6 +27,7 @@ interface HostingPlan {
   price: string;
   priceAmount: number;
   period: string;
+  typeLabel: string;
   icon: React.ElementType;
   glowColor: 'green' | 'cyan' | 'purple';
   features: { icon: React.ElementType; text: string }[];
@@ -39,6 +40,7 @@ const plans: HostingPlan[] = [
     price: '₹499',
     priceAmount: 499,
     period: '/month',
+    typeLabel: 'Basic Hosting & Maintenance',
     icon: Shield,
     glowColor: 'green',
     features: [
@@ -54,6 +56,7 @@ const plans: HostingPlan[] = [
     price: '₹999',
     priceAmount: 999,
     period: '/month',
+    typeLabel: 'Growth Hosting & Maintenance',
     icon: Zap,
     glowColor: 'cyan',
     highlight: true,
@@ -71,6 +74,7 @@ const plans: HostingPlan[] = [
     price: '₹1,999',
     priceAmount: 1999,
     period: '/month',
+    typeLabel: 'Premium Hosting & Maintenance',
     icon: Crown,
     glowColor: 'purple',
     features: [
@@ -228,6 +232,7 @@ export default function Hosting() {
         packagePriceAmount={selectedPlan.priceAmount}
         packageFeatures={selectedPlan.features.map((f) => f.text)}
         packageType="hosting"
+        packageTypeLabel={selectedPlan.typeLabel}
       />
     </section>
   );

@@ -307,7 +307,7 @@ export default function Contact() {
                     <motion.h4
                       className="mb-2 text-lg font-bold"
                       style={{
-                        background: 'linear-gradient(135deg, #39ff14, #00f0ff)',
+                        backgroundImage: 'linear-gradient(135deg, #39ff14, #00f0ff)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
