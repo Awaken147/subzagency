@@ -227,37 +227,30 @@ export default function CheckoutModal({
     setStep('payment');
   };
 
-  const generateScreenshotWhatsAppMessage = () => {
+  const generateWhatsAppMessage = () => {
     return `Hello SubzAgency,
 
-I have completed the payment for my selected package.
+I would like to discuss my project and payment process.
 
-Details:
+Project Details:
 - Name: ${formData.name}
 - Business Name: ${formData.businessName}
 - Selected Package: ${packageName}
-- Amount Paid: ${packagePrice}
+- Package Price: ${packagePrice}
 - Email: ${formData.email}
 - Phone Number: ${formData.phone}
 
-I am attaching the payment screenshot for verification.
+I have completed the payment / partial payment and will attach the payment screenshot for verification.
 
-Please confirm and begin the project process.
+I would also like to discuss the payment structure.
+
+Possible payment option:
+- 50% advance payment
+- 50% after project completion
+
+Please contact me to continue the project discussion.
 
 Thank you.`;
-  };
-
-  const generateGeneralWhatsAppMessage = () => {
-    return `Hello SubzAgency!
-
-I just completed a payment for the ${packageName} package (${packagePrice}).
-
-Name: ${formData.name}
-Business: ${formData.businessName}
-Email: ${formData.email}
-Phone: ${formData.phone}
-
-Looking forward to working with you!`;
   };
 
   const handleCopyUpi = async () => {
@@ -286,13 +279,8 @@ Looking forward to working with you!`;
     setStep('confirmation');
   };
 
-  const handleSendScreenshot = () => {
-    const message = generateScreenshotWhatsAppMessage();
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-  };
-
-  const handleContinueToWhatsApp = () => {
-    const message = generateGeneralWhatsAppMessage();
+  const handleDiscussAndSend = () => {
+    const message = generateWhatsAppMessage();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -592,7 +580,7 @@ Looking forward to working with you!`;
                         {/* Contact on WhatsApp */}
                         <motion.button
                           onClick={() => {
-                            const msg = generateGeneralWhatsAppMessage();
+                            const msg = generateWhatsAppMessage();
                             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
                           }}
                           whileHover={{ scale: 1.02 }}
@@ -792,9 +780,9 @@ Looking forward to working with you!`;
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.0 }}
                       >
-                        {/* Send Payment Screenshot — Primary CTA */}
+                        {/* Discuss & Send Payment Screenshot — Primary CTA */}
                         <motion.button
-                          onClick={handleSendScreenshot}
+                          onClick={handleDiscussAndSend}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           className="group flex w-full items-center justify-center gap-2.5 rounded-xl py-4 text-sm font-bold transition-all duration-300"
@@ -812,23 +800,12 @@ Looking forward to working with you!`;
                               '0 0 20px rgba(57,255,20,0.2), 0 0 40px rgba(0,240,255,0.1)';
                           }}
                         >
-                          <Camera size={18} />
-                          <span>Send Payment Screenshot</span>
+                          <MessageCircle size={18} />
+                          <span>Discuss & Send Payment Screenshot</span>
                           <ArrowRight
                             size={16}
                             className="transition-transform duration-300 group-hover:translate-x-1"
                           />
-                        </motion.button>
-
-                        {/* Continue To WhatsApp */}
-                        <motion.button
-                          onClick={handleContinueToWhatsApp}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 py-3.5 text-sm font-semibold text-green-400 transition-all duration-300 hover:bg-green-500/15 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
-                        >
-                          <MessageCircle size={18} />
-                          Continue To WhatsApp
                         </motion.button>
 
                         {/* Back To Website */}
