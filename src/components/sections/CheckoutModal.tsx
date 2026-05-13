@@ -22,6 +22,8 @@ import {
   Clock,
   ShieldCheck,
   CreditCard,
+  Tag,
+  Palette,
 } from 'lucide-react';
 import Image from 'next/image';
 import MagneticButton from '@/components/effects/MagneticButton';
@@ -44,6 +46,8 @@ interface FormData {
   businessName: string;
   phone: string;
   email: string;
+  businessCategory: string;
+  preferredStyle: string;
   requirements: string;
 }
 
@@ -219,6 +223,8 @@ export default function CheckoutModal({
     businessName: '',
     phone: '',
     email: '',
+    businessCategory: '',
+    preferredStyle: '',
     requirements: '',
   });
   const [copied, setCopied] = useState(false);
@@ -227,6 +233,9 @@ export default function CheckoutModal({
 
   // Resolve the display type label: use explicit label if provided, otherwise fallback
   const displayTypeLabel = packageTypeLabel || (packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package');
+
+  // Derive project type from package info for WhatsApp message
+  const projectType = packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Development';
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -239,81 +248,106 @@ export default function CheckoutModal({
     setStep('payment');
   };
 
-  const generateWhatsAppMessage = () => {
-    return `Hello SubzAgency,
+  /* ---------------------------------------------------------------- */
+  /*  WhatsApp Message Generators — ALL 50/50 TEXT REMOVED             */
+  /* ---------------------------------------------------------------- */
 
-I would like to discuss my ${packageType === 'hosting' ? 'hosting & maintenance' : 'website project'} and payment process.
-
-Project Details:
-- Name: ${formData.name}
-- Business Name: ${formData.businessName}
-- Selected Package: ${packageName}
-- Package Price: ${packagePrice}
-- Package Type: ${displayTypeLabel}
-- Email: ${formData.email}
-- Phone Number: ${formData.phone}
-${formData.requirements ? `- Requirements: ${formData.requirements}` : ''}
-
-I have completed the payment / partial payment and will attach the payment screenshot for verification.
-
-I would also like to discuss the payment structure.
-
-Possible payment option:
-- 50% advance payment
-- 50% after project completion
-
-Please contact me to continue the project discussion.
-
-Thank you.`;
+  /**
+   * POST-PAYMENT message: Used when user clicks "Discuss & Send Payment Screenshot"
+   * on the confirmation screen. The user has ALREADY PAID.
+   */
+  const generatePaidScreenshotMessage = () => {
+    const lines = [
+      'Hello SubzAgency,',
+      '',
+      'I have completed the payment for my selected website package and I am attaching the payment screenshot for verification.',
+      '',
+      'PROJECT DETAILS:',
+      `\u2022 Name: ${formData.name}`,
+      `\u2022 Business Name: ${formData.businessName}`,
+      `\u2022 Selected Package: ${packageName}`,
+      `\u2022 Package Type: ${displayTypeLabel}`,
+      `\u2022 Amount Paid: ${packagePrice}`,
+      `\u2022 Email: ${formData.email}`,
+      `\u2022 Phone Number: ${formData.phone}`,
+      '',
+      'PROJECT REQUIREMENTS:',
+      `\u2022 Business Category: ${formData.businessCategory || 'Not specified'}`,
+      `\u2022 Project Type: ${projectType}`,
+      `\u2022 Main Requirements: ${formData.requirements || 'To be discussed'}`,
+      `\u2022 Preferred Style: ${formData.preferredStyle || 'To be discussed'}`,
+      '',
+      'Please review my payment and contact me to begin the project onboarding process.',
+      '',
+      'Thank you.',
+    ];
+    return lines.join('\n');
   };
 
+  /**
+   * PRE-PAYMENT message: Used when user clicks "Discuss Payment Plans"
+   * on the payment screen. The user has NOT yet paid and wants to discuss
+   * flexible payment options.
+   */
   const generateDiscussPaymentMessage = () => {
-    return `Hello SubzAgency,
-
-I'm interested in your ${packageType === 'hosting' ? 'hosting & maintenance' : 'website'} services and would like to discuss the payment plans before proceeding.
-
-Client Details:
-- Name: ${formData.name}
-- Business Name: ${formData.businessName}
-- Email: ${formData.email}
-- Phone: ${formData.phone}
-
-Selected Package:
-- Package Name: ${packageName}
-- Package Type: ${displayTypeLabel}
-- Package Price: ${packagePrice}
-
-I would like to discuss:
-- 50% advance payment
-- Remaining 50% after project completion
-OR
-- Other installment/payment options
-
-Please guide me further.
-
-Thank you.`;
+    const lines = [
+      'Hello SubzAgency,',
+      '',
+      `I am interested in the ${packageName} (${displayTypeLabel}) and would like to discuss flexible payment options before proceeding.`,
+      '',
+      'CLIENT DETAILS:',
+      `\u2022 Name: ${formData.name}`,
+      `\u2022 Business Name: ${formData.businessName}`,
+      `\u2022 Email: ${formData.email}`,
+      `\u2022 Phone Number: ${formData.phone}`,
+      '',
+      'SELECTED PACKAGE:',
+      `\u2022 Package Name: ${packageName}`,
+      `\u2022 Package Type: ${displayTypeLabel}`,
+      `\u2022 Package Price: ${packagePrice}`,
+      '',
+      'I would like to discuss:',
+      '\u2022 Flexible payment options',
+      '\u2022 Payment schedule and plans',
+      '\u2022 Project timeline and deliverables',
+      '',
+      'Please guide me further.',
+      '',
+      'Thank you.',
+    ];
+    return lines.join('\n');
   };
 
+  /**
+   * CUSTOM QUOTE message: Used for the Custom Enterprise Solution package.
+   * No fixed price — opens WhatsApp for custom discussion.
+   */
   const generateCustomQuoteMessage = () => {
-    return `Hello SubzAgency,
-
-I'm interested in a custom enterprise solution and would like to discuss the project scope and pricing.
-
-Client Details:
-- Name: ${formData.name}
-- Business Name: ${formData.businessName}
-- Email: ${formData.email}
-- Phone: ${formData.phone}
-${formData.requirements ? `- Requirements: ${formData.requirements}` : ''}
-
-I would like to discuss:
-- Custom project scope
-- Flexible payment options
-- Timeline and deliverables
-
-Please contact me to discuss further.
-
-Thank you.`;
+    const lines = [
+      'Hello SubzAgency,',
+      '',
+      'I am interested in a custom enterprise solution and would like to discuss the project scope and pricing.',
+      '',
+      'CLIENT DETAILS:',
+      `\u2022 Name: ${formData.name}`,
+      `\u2022 Business Name: ${formData.businessName}`,
+      `\u2022 Email: ${formData.email}`,
+      `\u2022 Phone Number: ${formData.phone}`,
+      `\u2022 Business Category: ${formData.businessCategory || 'Not specified'}`,
+      formData.requirements ? `\u2022 Requirements: ${formData.requirements}` : '',
+      formData.preferredStyle ? `\u2022 Preferred Style: ${formData.preferredStyle}` : '',
+      '',
+      'I would like to discuss:',
+      '\u2022 Custom project scope and features',
+      '\u2022 Pricing and flexible payment options',
+      '\u2022 Timeline and deliverables',
+      '',
+      'Please contact me to discuss further.',
+      '',
+      'Thank you.',
+    ];
+    // Filter out empty lines from optional fields
+    return lines.filter((line, i) => line !== '' || i === 1 || i === 3 || i === lines.length - 2 || lines[i - 1] !== '').join('\n');
   };
 
   const handleCopyUpi = async () => {
@@ -343,7 +377,7 @@ Thank you.`;
   };
 
   const handleDiscussAndSend = () => {
-    const message = generateWhatsAppMessage();
+    const message = generatePaidScreenshotMessage();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -354,6 +388,8 @@ Thank you.`;
       businessName: '',
       phone: '',
       email: '',
+      businessCategory: '',
+      preferredStyle: '',
       requirements: '',
     });
     onClose();
@@ -422,7 +458,7 @@ Thank you.`;
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       <span className="font-semibold text-neon-green">{packageName}</span>
-                      {' — '}
+                      {' \u2014 '}
                       <span className="font-semibold text-neon-cyan">{packagePrice}</span>
                     </p>
                   </div>
@@ -455,7 +491,7 @@ Thank you.`;
                     <motion.form
                       key="form"
                       onSubmit={handleFormSubmit}
-                      className="space-y-4"
+                      className="space-y-3.5"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
@@ -484,28 +520,52 @@ Thank you.`;
                         />
                       </div>
 
-                      <div className="relative">
-                        <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                        <input
-                          type="tel"
-                          required
-                          placeholder="Phone Number *"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={`${inputClass} pl-11`}
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="relative">
+                          <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                          <input
+                            type="tel"
+                            required
+                            placeholder="Phone Number *"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            className={`${inputClass} pl-11`}
+                          />
+                        </div>
+                        <div className="relative">
+                          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                          <input
+                            type="email"
+                            required
+                            placeholder="Email Address *"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className={`${inputClass} pl-11`}
+                          />
+                        </div>
                       </div>
 
-                      <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                        <input
-                          type="email"
-                          required
-                          placeholder="Email Address *"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={`${inputClass} pl-11`}
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="relative">
+                          <Tag className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                          <input
+                            type="text"
+                            placeholder="Business Category (e.g. E-commerce)"
+                            value={formData.businessCategory}
+                            onChange={(e) => setFormData({ ...formData, businessCategory: e.target.value })}
+                            className={`${inputClass} pl-11`}
+                          />
+                        </div>
+                        <div className="relative">
+                          <Palette className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                          <input
+                            type="text"
+                            placeholder="Preferred Style (e.g. Futuristic)"
+                            value={formData.preferredStyle}
+                            onChange={(e) => setFormData({ ...formData, preferredStyle: e.target.value })}
+                            className={`${inputClass} pl-11`}
+                          />
+                        </div>
                       </div>
 
                       <div className="relative">
@@ -707,7 +767,7 @@ Thank you.`;
                           Open UPI App
                         </motion.button>
 
-                        {/* I Have Paid — now shows confirmation screen instead of redirecting */}
+                        {/* I Have Paid — shows confirmation screen */}
                         <motion.button
                           onClick={handleIHavePaid}
                           whileHover={{ scale: 1.02 }}
@@ -837,7 +897,6 @@ Thank you.`;
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
-                            textShadow: '0 0 40px rgba(57,255,20,0.2)',
                             filter: 'drop-shadow(0 0 20px rgba(57,255,20,0.15))',
                           }}
                         >
@@ -921,13 +980,13 @@ Thank you.`;
                                 fontWeight: 600,
                               }}
                             >
-                              We're excited to build something amazing for your business.
+                              We&apos;re excited to build something amazing for your business.
                             </span>
                           </p>
                         </div>
                       </motion.div>
 
-                      {/* Order summary card */}
+                      {/* Order summary card — dynamic data */}
                       <motion.div
                         className="relative z-10 w-full"
                         initial={{ opacity: 0, y: 15 }}
@@ -950,7 +1009,7 @@ Thank you.`;
                             <span className="text-foreground">{displayTypeLabel}</span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">{isCustomQuote ? 'Amount' : 'Amount Paid'}</span>
+                            <span className="text-muted-foreground">Amount Paid</span>
                             <span className="font-bold text-neon-green">{isCustomQuote ? 'Custom Pricing' : packagePrice}</span>
                           </div>
                           <div className="flex justify-between text-sm">
@@ -961,6 +1020,12 @@ Thank you.`;
                             <span className="text-muted-foreground">Business</span>
                             <span className="text-foreground">{formData.businessName}</span>
                           </div>
+                          {formData.businessCategory && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Category</span>
+                              <span className="text-foreground">{formData.businessCategory}</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Email</span>
                             <span className="text-foreground text-xs sm:text-sm">{formData.email}</span>
