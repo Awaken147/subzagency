@@ -184,40 +184,52 @@ function PricingCard({
             plan.isEnterprise ? 'z-10' : ''
           } ${plan.scaleUp ? 'sm:pb-10' : ''}`}
         >
-          {/* Badge */}
+          {/* Badge — compact glassmorphism pill, top-right floating */}
           {plan.badge && (
             <motion.div
-              className="mb-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider"
-              style={{
-                backgroundColor: `${plan.badgeColor}15`,
-                border: `1px solid ${plan.badgeColor}30`,
-                color: plan.badgeColor,
-                boxShadow:
-                  plan.isEnterprise
-                    ? `0 0 15px ${plan.badgeColor}30, 0 0 30px ${plan.badgeColor}15`
-                    : 'none',
-              }}
-              animate={
-                plan.isEnterprise
-                  ? {
-                      boxShadow: [
-                        `0 0 15px ${plan.badgeColor}30, 0 0 30px ${plan.badgeColor}15`,
-                        `0 0 25px ${plan.badgeColor}50, 0 0 50px ${plan.badgeColor}25`,
-                        `0 0 15px ${plan.badgeColor}30, 0 0 30px ${plan.badgeColor}15`,
-                      ],
-                    }
-                  : undefined
-              }
-              transition={
-                plan.isEnterprise
-                  ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
-                  : undefined
-              }
+              className="absolute -top-2.5 right-4 sm:right-5 z-20"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
             >
-              {plan.isEnterprise && (
-                <Sparkles size={10} className="sm:text-xs" style={{ color: plan.badgeColor }} />
-              )}
-              {plan.badge}
+              <motion.div
+                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest"
+                style={{
+                  color: plan.badgeColor,
+                  backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))`,
+                  border: `1px solid ${plan.badgeColor}28`,
+                  boxShadow: `0 0 8px ${plan.badgeColor}18, inset 0 0 6px rgba(255,255,255,0.03)`,
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                }}
+                animate={
+                  plan.isEnterprise
+                    ? {
+                        boxShadow: [
+                          `0 0 8px ${plan.badgeColor}18, inset 0 0 6px rgba(255,255,255,0.03)`,
+                          `0 0 14px ${plan.badgeColor}30, inset 0 0 6px rgba(255,255,255,0.03)`,
+                          `0 0 8px ${plan.badgeColor}18, inset 0 0 6px rgba(255,255,255,0.03)`,
+                        ],
+                      }
+                    : {
+                        boxShadow: [
+                          `0 0 6px ${plan.badgeColor}12, inset 0 0 4px rgba(255,255,255,0.02)`,
+                          `0 0 10px ${plan.badgeColor}22, inset 0 0 4px rgba(255,255,255,0.02)`,
+                          `0 0 6px ${plan.badgeColor}12, inset 0 0 4px rgba(255,255,255,0.02)`,
+                        ],
+                      }
+                }
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                {plan.isEnterprise && (
+                  <Sparkles size={8} style={{ color: plan.badgeColor }} />
+                )}
+                {plan.badge}
+              </motion.div>
             </motion.div>
           )}
 
