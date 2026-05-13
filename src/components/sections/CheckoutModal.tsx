@@ -22,8 +22,10 @@ import {
   Home,
   Clock,
   ShieldCheck,
+  CreditCard,
 } from 'lucide-react';
 import Image from 'next/image';
+import MagneticButton from '@/components/effects/MagneticButton';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -249,6 +251,26 @@ Possible payment option:
 - 50% after project completion
 
 Please contact me to continue the project discussion.
+
+Thank you.`;
+  };
+
+  const generateDiscussPaymentMessage = () => {
+    return `Hello SubzAgency,
+
+I'm interested in your website services and would like to discuss the payment plans before proceeding.
+
+Selected Package:
+- Package Name: ${packageName}
+- Package Price: ${packagePrice}
+
+I would like to discuss:
+- 50% advance payment
+- Remaining 50% after project completion
+OR
+- Other installment/payment options
+
+Please guide me further.
 
 Thank you.`;
   };
@@ -577,19 +599,58 @@ Thank you.`;
                           I Have Paid
                         </motion.button>
 
-                        {/* Contact on WhatsApp */}
-                        <motion.button
-                          onClick={() => {
-                            const msg = generateWhatsAppMessage();
-                            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 py-3.5 text-sm font-semibold text-green-400 transition-all duration-300 hover:bg-green-500/15 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
-                        >
-                          <MessageCircle size={18} />
-                          Contact on WhatsApp
-                        </motion.button>
+                        {/* Discuss Payment Plans — Premium Glassmorphism CTA */}
+                        <div className="relative" style={{ animation: 'float-subtle 3s ease-in-out infinite' }}>
+                          <MagneticButton
+                            strength={4}
+                            onClick={() => {
+                              const msg = generateDiscussPaymentMessage();
+                              window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                            }}
+                            className="group relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-semibold transition-all duration-500"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(15,15,35,0.95), rgba(15,15,35,0.95)), linear-gradient(135deg, #00f0ff, #39ff14)',
+                              border: '1.5px solid transparent',
+                              backgroundOrigin: 'border-box',
+                              backgroundClip: 'padding-box, border-box',
+                              color: '#e8e8f0',
+                              boxShadow: '0 0 15px rgba(0,240,255,0.1), 0 0 30px rgba(57,255,20,0.05)',
+                              backdropFilter: 'blur(20px)',
+                              WebkitBackdropFilter: 'blur(20px)',
+                            }}
+                          >
+                            {/* Animated gradient border glow on hover */}
+                            <span
+                              className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                              style={{
+                                boxShadow: '0 0 25px rgba(0,240,255,0.3), 0 0 50px rgba(57,255,20,0.2), inset 0 0 25px rgba(0,240,255,0.06)',
+                              }}
+                            />
+                            {/* Shimmer sweep effect on hover */}
+                            <span
+                              className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                              style={{
+                                background: 'linear-gradient(105deg, transparent 40%, rgba(0,240,255,0.1) 45%, rgba(57,255,20,0.1) 55%, transparent 60%)',
+                                backgroundSize: '250% 100%',
+                                animation: 'shimmer 2.5s linear infinite',
+                              }}
+                            />
+                            <span className="relative z-10 flex items-center justify-center gap-2.5">
+                              <CreditCard size={17} className="text-neon-cyan transition-transform duration-300 group-hover:scale-110" />
+                              <span
+                                className="transition-all duration-300"
+                                style={{
+                                  background: 'linear-gradient(135deg, #00f0ff, #39ff14)',
+                                  WebkitBackgroundClip: 'text',
+                                  WebkitTextFillColor: 'transparent',
+                                  backgroundClip: 'text',
+                                }}
+                              >
+                                Discuss Payment Plans
+                              </span>
+                            </span>
+                          </MagneticButton>
+                        </div>
                       </div>
 
                       {/* Razorpay Coming Soon Badge */}

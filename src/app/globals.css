@@ -175,6 +175,11 @@
   56% { opacity: 1; }
 }
 
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
 /* Glassmorphism utility */
 .glass {
   background: rgba(15, 15, 35, 0.4);

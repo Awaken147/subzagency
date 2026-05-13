@@ -128,3 +128,40 @@ Stage Summary:
 - WhatsApp message includes payment structure discussion (50/50 option)
 - Single unified message template across all WhatsApp interactions
 - Clean, premium, agency-like UX
+
+---
+Task ID: 5
+Agent: Main Orchestrator
+Task: Payment modal button update — Replace "Contact on WhatsApp" with "Discuss Payment Plans"
+
+Work Log:
+- Removed "Contact on WhatsApp" button from payment step completely
+- Added new "Discuss Payment Plans" button with dedicated WhatsApp message template:
+  - Opens with "I'm interested in your website services and would like to discuss the payment plans before proceeding"
+  - Shows Selected Package: Package Name + Package Price
+  - Discusses payment structure: "50% advance payment, Remaining 50% after project completion OR Other installment/payment options"
+  - Closes with "Please guide me further"
+- Created separate `generateDiscussPaymentMessage()` function for the new button's WhatsApp message
+- Kept existing `generateWhatsAppMessage()` for the confirmation step's "Discuss & Send Payment Screenshot" button
+- Premium glassmorphism button design with:
+  - Cyan/green gradient border using background-clip technique
+  - Glassmorphism backdrop-filter blur
+  - Animated glow on hover (box-shadow transition)
+  - Shimmer sweep effect on hover
+  - CreditCard icon with hover scale animation
+  - Gradient text (cyan → green)
+  - Subtle floating animation (float-subtle keyframe, 3s loop)
+  - MagneticButton component wrapper for magnetic hover effect (strength: 4)
+- Added `float-subtle` CSS keyframe animation to globals.css
+- Added `CreditCard` icon import from lucide-react
+- Imported MagneticButton component from effects
+- Final payment step button order: 1) Open UPI App, 2) I Have Paid, 3) Discuss Payment Plans
+- No extra WhatsApp buttons, no repetitive CTAs — clean professional flow
+- Lint passes clean, dev server compiles and returns HTTP 200
+
+Stage Summary:
+- "Contact on WhatsApp" button replaced with premium "Discuss Payment Plans" button
+- Dedicated WhatsApp message for payment plan discussion (50/50 split, installment options)
+- Premium glassmorphism styling with gradient border, glow, shimmer, magnetic hover, floating animation
+- Clean 3-button layout in payment step: Open UPI → I Have Paid → Discuss Payment Plans
+- No duplicate or redundant CTAs
