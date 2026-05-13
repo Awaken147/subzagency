@@ -32,6 +32,8 @@ interface CheckoutModalProps {
   packageName: string;
   packagePrice: string;
   packagePriceAmount: number;
+  packageFeatures?: string[];
+  packageType?: 'website' | 'hosting';
 }
 
 type PaymentStep = 'form' | 'payment' | 'confirmation';
@@ -206,6 +208,8 @@ export default function CheckoutModal({
   packageName,
   packagePrice,
   packagePriceAmount,
+  packageFeatures = [],
+  packageType = 'website',
 }: CheckoutModalProps) {
   const [step, setStep] = useState<PaymentStep>('form');
   const [formData, setFormData] = useState<FormData>({
@@ -231,15 +235,17 @@ export default function CheckoutModal({
   const generateWhatsAppMessage = () => {
     return `Hello SubzAgency,
 
-I would like to discuss my project and payment process.
+I would like to discuss my ${packageType === 'hosting' ? 'hosting & maintenance' : 'website project'} and payment process.
 
 Project Details:
 - Name: ${formData.name}
 - Business Name: ${formData.businessName}
 - Selected Package: ${packageName}
 - Package Price: ${packagePrice}
+- Package Type: ${packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package'}
 - Email: ${formData.email}
 - Phone Number: ${formData.phone}
+${formData.requirements ? `- Requirements: ${formData.requirements}` : ''}
 
 I have completed the payment / partial payment and will attach the payment screenshot for verification.
 
@@ -257,7 +263,13 @@ Thank you.`;
   const generateDiscussPaymentMessage = () => {
     return `Hello SubzAgency,
 
-I'm interested in your website services and would like to discuss the payment plans before proceeding.
+I'm interested in your ${packageType === 'hosting' ? 'hosting & maintenance' : 'website'} services and would like to discuss the payment plans before proceeding.
+
+Client Details:
+- Name: ${formData.name}
+- Business Name: ${formData.businessName}
+- Email: ${formData.email}
+- Phone: ${formData.phone}
 
 Selected Package:
 - Package Name: ${packageName}
@@ -483,6 +495,38 @@ Thank you.`;
                       >
                         {isCustomQuote ? 'Contact Us on WhatsApp' : 'Proceed to Payment'}
                       </motion.button>
+
+                      {/* Selected Package Summary — dynamic recap */}
+                      {packageFeatures.length > 0 && (
+                        <div
+                          className="rounded-xl p-4 space-y-2"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(57,255,20,0.03), rgba(0,240,255,0.03))',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                          }}
+                        >
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
+                            Your Selected Plan
+                          </p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-semibold text-foreground">{packageName}</span>
+                            <span className="text-sm font-bold text-neon-green">{packagePrice}</span>
+                          </div>
+                          <ul className="mt-1.5 space-y-1 max-h-28 overflow-y-auto pr-1">
+                            {packageFeatures.slice(0, 5).map((feature) => (
+                              <li key={feature} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Check size={11} className="shrink-0 text-neon-green/60" />
+                                {feature}
+                              </li>
+                            ))}
+                            {packageFeatures.length > 5 && (
+                              <li className="text-xs text-muted-foreground/50">
+                                +{packageFeatures.length - 5} more features
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
                     </motion.form>
                   )}
 
@@ -548,7 +592,51 @@ Thank you.`;
                           >
                             {packagePrice}
                           </p>
+                          <p className="mt-1 text-xs text-muted-foreground/60">
+                            {packageName}
+                          </p>
                         </div>
+
+                        {/* Package Features Quick Glance */}
+                        {packageFeatures.length > 0 && (
+                          <div
+                            className="w-full rounded-xl p-3.5"
+                            style={{
+                              background: 'rgba(255,255,255,0.02)',
+                              border: '1px solid rgba(255,255,255,0.06)',
+                            }}
+                          >
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-2">
+                              Included in your plan
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {packageFeatures.slice(0, 4).map((feature) => (
+                                <span
+                                  key={feature}
+                                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] text-muted-foreground/80"
+                                  style={{
+                                    background: 'rgba(57,255,20,0.04)',
+                                    border: '1px solid rgba(57,255,20,0.08)',
+                                  }}
+                                >
+                                  <Check size={9} className="text-neon-green/60" />
+                                  {feature}
+                                </span>
+                              ))}
+                              {packageFeatures.length > 4 && (
+                                <span
+                                  className="inline-flex items-center rounded-md px-2 py-1 text-[10px] text-muted-foreground/50"
+                                  style={{
+                                    background: 'rgba(255,255,255,0.02)',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                  }}
+                                >
+                                  +{packageFeatures.length - 4} more
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* UPI ID Section */}
@@ -824,7 +912,11 @@ Thank you.`;
                             <span className="font-medium text-foreground">{packageName}</span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Amount Paid</span>
+                            <span className="text-muted-foreground">Type</span>
+                            <span className="text-foreground">{packageType === 'hosting' ? 'Hosting & Maintenance' : 'Website Package'}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">{isCustomQuote ? 'Amount' : 'Amount Paid'}</span>
                             <span className="font-bold text-neon-green">{packagePrice}</span>
                           </div>
                           <div className="flex justify-between text-sm">

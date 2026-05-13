@@ -226,6 +226,8 @@ export default function Hosting() {
         packageName={`${selectedPlan.name} — Hosting & Maintenance`}
         packagePrice={selectedPlan.price + selectedPlan.period}
         packagePriceAmount={selectedPlan.priceAmount}
+        packageFeatures={selectedPlan.features.map((f) => f.text)}
+        packageType="hosting"
       />
     </section>
   );

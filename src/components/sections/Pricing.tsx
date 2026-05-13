@@ -376,6 +376,8 @@ export default function Pricing() {
         packageName={selectedPlan.name}
         packagePrice={selectedPlan.price}
         packagePriceAmount={selectedPlan.priceAmount}
+        packageFeatures={selectedPlan.features.map((f) => f.text)}
+        packageType="website"
       />
     </section>
   );
