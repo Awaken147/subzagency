@@ -58,9 +58,15 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "48x48" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "SubzAgency | Cinematic 3D Websites That Sell",
     description:
@@ -122,7 +128,7 @@ export default function RootLayout({
                   url: "https://subzagency.com",
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://subzagency.com/logo.svg",
+                    url: "https://subzagency.com/icon.png",
                   },
                   email: "subzagency99@gmail.com",
                   telephone: "+91-6297097642",
