@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { ChevronDown, Star, Zap, Headphones } from 'lucide-react';
 import AuroraBackground from '@/components/effects/AuroraBackground';
@@ -12,31 +12,39 @@ import AnimatedCounter from '@/components/effects/AnimatedCounter';
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const HEADING_WORDS = ['We', 'Build', 'Cinematic', '3D', 'Websites', 'That', 'Sell'];
-
 const METRICS = [
   { label: 'Projects Delivered', value: 150, suffix: '+', icon: Zap },
-  { label: 'Client Rating', value: 4.9, suffix: '★', icon: Star, decimals: true },
+  { label: 'Client Rating', value: 4.9, suffix: '★', icon: Star },
   { label: 'Smooth Animations', value: 60, suffix: 'fps', icon: Zap },
   { label: 'Support', value: 24, suffix: '/7', icon: Headphones },
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/*  Stagger helpers                                                    */
+/*  Animation variants                                                 */
 /* ------------------------------------------------------------------ */
 
 const containerVariants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
 };
 
 const wordVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 40, filter: 'blur(6px)' },
   visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
     transition: { duration: 0.6, ease: [0.25, 0.4, 0.25, 1] },
+  },
+};
+
+const threeDVariants = {
+  hidden: { opacity: 0, scale: 0.5, rotateY: -90 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotateY: 0,
+    transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1], delay: 0.3 },
   },
 };
 
@@ -51,7 +59,7 @@ const fadeUp = (delay = 0) => ({
 
 const metricContainerVariants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 1.2 } },
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 1.4 } },
 };
 
 const metricCardVariants = {
@@ -69,8 +77,8 @@ const metricCardVariants = {
 /* ------------------------------------------------------------------ */
 
 function MouseGlow() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const mouseX = useMotionValue(-600);
+  const mouseY = useMotionValue(-600);
   const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
   const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
 
@@ -104,6 +112,100 @@ function MouseGlow() {
         }}
       />
     </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  3D Text Component                                                  */
+/* ------------------------------------------------------------------ */
+
+function ThreeDText() {
+  const [isClient, setIsClient] = useState(false);
+
+  // Use requestAnimationFrame to set client state after initial render
+  // This avoids the "setState in effect" lint warning
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setIsClient(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <span
+        className="inline-block mx-2 font-extrabold text-transparent"
+        style={{ fontSize: 'clamp(3rem, 10vw, 8rem)' }}
+      >
+        3D
+      </span>
+    );
+  }
+
+  return (
+    <motion.span
+      variants={threeDVariants}
+      className="inline-block relative mx-1 sm:mx-2"
+      style={{ perspective: '800px' }}
+    >
+      <motion.span
+        className="inline-block font-extrabold relative"
+        style={{
+          fontSize: 'clamp(3rem, 10vw, 8rem)',
+          lineHeight: 1,
+          background: 'linear-gradient(135deg, #39ff14 0%, #00f0ff 40%, #a855f7 70%, #39ff14 100%)',
+          backgroundSize: '300% 300%',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          animation: 'gradient-shift 3s ease infinite',
+          filter: 'drop-shadow(0 0 20px rgba(57,255,20,0.5)) drop-shadow(0 0 40px rgba(0,240,255,0.3)) drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
+          transformStyle: 'preserve-3d',
+        }}
+        animate={{
+          rotateY: [0, 2, 0, -2, 0],
+          rotateX: [0, -1, 0, 1, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        3D
+        {/* Glassmorphism overlay layer */}
+        <span
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: 'inherit',
+            fontWeight: 'inherit',
+            lineHeight: 'inherit',
+          }}
+          aria-hidden="true"
+        >
+          3D
+        </span>
+      </motion.span>
+      {/* Glow pulse behind 3D text */}
+      <motion.span
+        className="absolute inset-0 -z-10 blur-2xl pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(57,255,20,0.3) 0%, rgba(0,240,255,0.15) 50%, transparent 70%)',
+        }}
+        animate={{
+          opacity: [0.4, 0.7, 0.4],
+          scale: [0.95, 1.05, 0.95],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        aria-hidden="true"
+      />
+    </motion.span>
   );
 }
 
@@ -144,31 +246,41 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-20 text-center sm:px-6 lg:px-8">
         {/* Main heading */}
         <motion.h1
-          className="mb-6 font-bold tracking-tight [font-family:var(--font-space-grotesk)]"
-          style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
+          className="mb-6 font-bold tracking-tight [font-family:var(--font-space-grotesk)] flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
+          style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {HEADING_WORDS.map((word, i) => (
-            <motion.span
-              key={i}
-              variants={wordVariants}
-              className={`inline-block mr-[0.3em] ${
-                word === 'Cinematic' || word === '3D' || word === 'Sell'
-                  ? 'gradient-text'
-                  : 'text-foreground'
-              }`}
-            >
-              {word}
-            </motion.span>
-          ))}
+          <motion.span variants={wordVariants} className="inline-block text-foreground">
+            We Build
+          </motion.span>
+          <motion.span
+            variants={wordVariants}
+            className="inline-block"
+            style={{
+              background: 'linear-gradient(135deg, #00f0ff, #0066ff)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Cinematic
+          </motion.span>
+          <ThreeDText />
+          <motion.span variants={wordVariants} className="inline-block text-foreground"
+            style={{
+              textShadow: '0 0 20px rgba(255,255,255,0.1)',
+            }}
+          >
+            Websites That Sell
+          </motion.span>
         </motion.h1>
 
         {/* Subheading */}
         <motion.p
           className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
-          variants={fadeUp(0.8)}
+          variants={fadeUp(1.0)}
           initial="hidden"
           animate="visible"
         >
@@ -180,7 +292,7 @@ export default function Hero() {
         {/* CTA Buttons */}
         <motion.div
           className="mb-14 flex flex-wrap items-center justify-center gap-4"
-          variants={fadeUp(1.0)}
+          variants={fadeUp(1.2)}
           initial="hidden"
           animate="visible"
         >
@@ -221,7 +333,6 @@ export default function Hero() {
                 key={metric.label}
                 variants={metricCardVariants}
                 className="glass flex flex-col items-center gap-2 rounded-2xl p-4"
-                style={{ animation: `float 6s ease-in-out infinite` }}
               >
                 <Icon className="h-5 w-5 text-neon-green" />
                 <span className="text-2xl font-bold text-foreground sm:text-3xl">
@@ -246,7 +357,7 @@ export default function Hero() {
         onClick={scrollToAbout}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 0.8 }}
+        transition={{ delay: 2.5, duration: 0.8 }}
         aria-label="Scroll to about section"
       >
         <span className="text-xs tracking-widest uppercase">Scroll to explore</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, type CSSProperties } from 'react';
+import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 
 interface ParticleFieldProps {
   className?: string;
@@ -47,7 +47,20 @@ export default function ParticleField({
   className = '',
   count = 30,
 }: ParticleFieldProps) {
-  const particles = useMemo(() => generateParticles(count), [count]);
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    setParticles(generateParticles(count));
+  }, [count]);
+
+  if (particles.length === 0) {
+    return (
+      <div
+        className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <div

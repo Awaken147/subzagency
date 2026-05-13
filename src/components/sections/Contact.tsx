@@ -44,8 +44,8 @@ const contactCards = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'hello@subzagency.com',
-    href: 'mailto:hello@subzagency.com',
+    value: 'subzagency99@gmail.com',
+    href: 'mailto:subzagency99@gmail.com',
     color: 'text-neon-cyan',
     glowColor: 'rgba(0, 240, 255, 0.15)',
   },

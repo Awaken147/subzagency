@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import {
   Shield,
   Check,
@@ -20,10 +20,12 @@ import {
 import ScrollReveal from '@/components/effects/ScrollReveal';
 import GlowCard from '@/components/effects/GlowCard';
 import MagneticButton from '@/components/effects/MagneticButton';
+import CheckoutModal from '@/components/sections/CheckoutModal';
 
 interface HostingPlan {
   name: string;
   price: string;
+  priceAmount: number;
   period: string;
   icon: React.ElementType;
   glowColor: 'green' | 'cyan' | 'purple';
@@ -35,6 +37,7 @@ const plans: HostingPlan[] = [
   {
     name: 'Basic Care',
     price: '₹499',
+    priceAmount: 499,
     period: '/month',
     icon: Shield,
     glowColor: 'green',
@@ -49,6 +52,7 @@ const plans: HostingPlan[] = [
   {
     name: 'Growth Care',
     price: '₹999',
+    priceAmount: 999,
     period: '/month',
     icon: Zap,
     glowColor: 'cyan',
@@ -65,6 +69,7 @@ const plans: HostingPlan[] = [
   {
     name: 'Premium Care',
     price: '₹1,999',
+    priceAmount: 1999,
     period: '/month',
     icon: Crown,
     glowColor: 'purple',
@@ -81,6 +86,14 @@ const plans: HostingPlan[] = [
 ];
 
 export default function Hosting() {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(plans[0]);
+
+  const handleChoosePlan = (plan: HostingPlan) => {
+    setSelectedPlan(plan);
+    setCheckoutOpen(true);
+  };
+
   return (
     <section id="hosting" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -195,13 +208,7 @@ export default function Hosting() {
                           ? 'border border-neon-cyan/20 bg-neon-cyan/5 text-neon-cyan hover:bg-neon-cyan/10 hover:shadow-[0_0_20px_rgba(0,240,255,0.2)]'
                           : 'border border-neon-purple/20 bg-neon-purple/5 text-neon-purple hover:bg-neon-purple/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]'
                     }`}
-                    onClick={() => {
-                      window.open(
-                        'https://wa.me/916297097642',
-                        '_blank',
-                        'noopener,noreferrer'
-                      );
-                    }}
+                    onClick={() => handleChoosePlan(plan)}
                   >
                     Choose Plan
                   </MagneticButton>
@@ -211,6 +218,15 @@ export default function Hosting() {
           })}
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        packageName={`${selectedPlan.name} — Hosting & Maintenance`}
+        packagePrice={selectedPlan.price + selectedPlan.period}
+        packagePriceAmount={selectedPlan.priceAmount}
+      />
     </section>
   );
 }

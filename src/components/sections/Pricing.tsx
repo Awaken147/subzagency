@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
 import ScrollReveal from '@/components/effects/ScrollReveal';
 import GlowCard from '@/components/effects/GlowCard';
+import CheckoutModal from '@/components/sections/CheckoutModal';
 
 type GlowColorType = 'green' | 'cyan' | 'purple';
 
@@ -14,6 +16,7 @@ interface PricingFeature {
 interface PricingPlan {
   name: string;
   price: string;
+  priceAmount: number;
   priceSubtext?: string;
   features: PricingFeature[];
   badge?: string;
@@ -27,12 +30,11 @@ interface PricingPlan {
   scaleUp?: boolean;
 }
 
-const WHATSAPP_LINK = 'https://wa.me/916297097642';
-
 const plans: PricingPlan[] = [
   {
     name: 'Simple Landing Page',
     price: '₹9,999',
+    priceAmount: 9999,
     features: [
       { text: '1-page modern landing page' },
       { text: 'Clean premium UI' },
@@ -49,6 +51,7 @@ const plans: PricingPlan[] = [
   {
     name: 'Starter 3D Business Website',
     price: '₹24,999',
+    priceAmount: 24999,
     badge: 'POPULAR',
     badgeColor: '#39ff14',
     features: [
@@ -70,6 +73,7 @@ const plans: PricingPlan[] = [
   {
     name: 'Growth 3D Experience Website',
     price: '₹49,999',
+    priceAmount: 49999,
     features: [
       { text: 'Advanced 3D animations' },
       { text: 'Interactive Three.js experiences' },
@@ -87,6 +91,7 @@ const plans: PricingPlan[] = [
   {
     name: 'Premium 3D Brand Experience',
     price: '₹89,999',
+    priceAmount: 89999,
     badge: 'PREMIUM',
     badgeColor: '#ff6600',
     features: [
@@ -108,6 +113,7 @@ const plans: PricingPlan[] = [
   {
     name: 'Custom Enterprise 3D Solution',
     price: 'DM For Custom Quote',
+    priceAmount: 0,
     priceSubtext: 'No fixed pricing',
     badge: 'ENTERPRISE',
     badgeColor: '#39ff14',
@@ -138,9 +144,11 @@ const checkColorMap: Record<string, string> = {
 function PricingCard({
   plan,
   index,
+  onGetStarted,
 }: {
   plan: PricingPlan;
   index: number;
+  onGetStarted: (plan: PricingPlan) => void;
 }) {
   return (
     <ScrollReveal delay={index * 0.1} className="flex">
@@ -254,13 +262,11 @@ function PricingCard({
           </ul>
 
           {/* CTA Button */}
-          <motion.a
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
+          <motion.button
+            onClick={() => onGetStarted(plan)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className={`block w-full text-center py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-300 ${
+            className={`block w-full text-center py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-300 cursor-pointer ${
               plan.buttonStyle === 'filled'
                 ? 'text-deep-black'
                 : plan.buttonStyle === 'special'
@@ -289,7 +295,7 @@ function PricingCard({
             }
           >
             {plan.isEnterprise ? 'Contact Us' : 'Get Started'}
-          </motion.a>
+          </motion.button>
         </GlowCard>
       </motion.div>
     </ScrollReveal>
@@ -297,6 +303,14 @@ function PricingCard({
 }
 
 export default function Pricing() {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PricingPlan>(plans[0]);
+
+  const handleGetStarted = (plan: PricingPlan) => {
+    setSelectedPlan(plan);
+    setCheckoutOpen(true);
+  };
+
   return (
     <section
       id="pricing"
@@ -343,17 +357,26 @@ export default function Pricing() {
         {/* Pricing Cards - First 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8 items-start">
           {plans.slice(0, 3).map((plan, index) => (
-            <PricingCard key={plan.name} plan={plan} index={index} />
+            <PricingCard key={plan.name} plan={plan} index={index} onGetStarted={handleGetStarted} />
           ))}
         </div>
 
         {/* Pricing Cards - Last 2 centered */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto items-start">
           {plans.slice(3).map((plan, index) => (
-            <PricingCard key={plan.name} plan={plan} index={index + 3} />
+            <PricingCard key={plan.name} plan={plan} index={index + 3} onGetStarted={handleGetStarted} />
           ))}
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        packageName={selectedPlan.name}
+        packagePrice={selectedPlan.price}
+        packagePriceAmount={selectedPlan.priceAmount}
+      />
     </section>
   );
 }

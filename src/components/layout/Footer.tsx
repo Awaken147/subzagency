@@ -108,11 +108,11 @@ export default function Footer() {
               ))}
               <li>
                 <a
-                  href="mailto:contact@subzagency.com"
+                  href="mailto:subzagency99@gmail.com"
                   className="flex items-center gap-2 text-sm text-gray-400 transition-colors duration-200 hover:text-[#39ff14]"
                 >
                   <Mail size={16} className="text-[#39ff14]/60" />
-                  contact@subzagency.com
+                  subzagency99@gmail.com
                 </a>
               </li>
             </ul>
@@ -143,16 +143,13 @@ export default function Footer() {
           <p className="text-sm text-gray-500">
             &copy; 2025 SubzAgency. All rights reserved.
           </p>
-          <p className="text-sm text-gray-500">
-            Built with <span className="text-[#39ff14]">&#x1f49a;</span> by SubzAgency
-          </p>
           <button
             onClick={scrollToTop}
             className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-gray-400 transition-all duration-200 hover:border-[#39ff14]/30 hover:text-[#39ff14]"
             aria-label="Back to top"
           >
             <ArrowUp size={16} />
-            Top
+            Back to Top
           </button>
         </div>
       </div>

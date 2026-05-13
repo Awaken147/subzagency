@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, ArrowUpRight } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import ScrollReveal from '@/components/effects/ScrollReveal';
 
 interface Project {
@@ -208,7 +208,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
           {/* Results */}
           <div
-            className="mb-5 flex items-center gap-2 rounded-lg p-3"
+            className="flex items-center gap-2 rounded-lg p-3"
             style={{
               background: `${project.color}08`,
               border: `1px solid ${project.color}15`,
@@ -219,19 +219,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               {project.results}
             </span>
           </div>
-
-          {/* View Project button */}
-          <a
-            href="#"
-            className="group inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200"
-            style={{ color: project.color }}
-          >
-            View Project
-            <ArrowUpRight
-              size={14}
-              className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </a>
         </div>
       </motion.div>
     </ScrollReveal>
