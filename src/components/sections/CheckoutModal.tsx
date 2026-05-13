@@ -12,12 +12,14 @@ import {
   CheckCircle2,
   MessageCircle,
   QrCode,
-  CreditCard,
-  Smartphone,
   Copy,
   Check,
   Shield,
+  ExternalLink,
+  Smartphone,
+  Sparkles,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -28,7 +30,6 @@ interface CheckoutModalProps {
 }
 
 type PaymentStep = 'form' | 'payment' | 'success';
-type PaymentMethod = 'qr' | 'upi' | 'razorpay';
 
 interface FormData {
   name: string;
@@ -39,6 +40,7 @@ interface FormData {
 }
 
 const WHATSAPP_NUMBER = '916297097642';
+const UPI_ID = 'subhamchettri147-1@okhdfcbank';
 
 export default function CheckoutModal({
   isOpen,
@@ -48,7 +50,6 @@ export default function CheckoutModal({
   packagePriceAmount,
 }: CheckoutModalProps) {
   const [step, setStep] = useState<PaymentStep>('form');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('qr');
   const [formData, setFormData] = useState<FormData>({
     name: '',
     businessName: '',
@@ -57,14 +58,12 @@ export default function CheckoutModal({
     requirements: '',
   });
   const [copied, setCopied] = useState(false);
-  const [processing, setProcessing] = useState(false);
 
   const isCustomQuote = packagePriceAmount === 0;
 
   const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (isCustomQuote) {
-      // For custom quote, go directly to WhatsApp
       const message = generateWhatsAppMessage();
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
       setStep('success');
@@ -74,7 +73,7 @@ export default function CheckoutModal({
   };
 
   const generateWhatsAppMessage = () => {
-    return `Hi SubzAgency! I'd like to proceed with:
+    return `Hi SubzAgency! Payment Completed ✅
 
 📋 Name: ${formData.name}
 🏢 Business: ${formData.businessName}
@@ -84,21 +83,38 @@ export default function CheckoutModal({
 📧 Email: ${formData.email}
 📝 Requirements: ${formData.requirements || 'N/A'}
 
+✅ Payment Completed
+
 Please confirm my order!`;
   };
 
-  const handlePaymentComplete = () => {
-    setProcessing(true);
-    setTimeout(() => {
-      setProcessing(false);
-      setStep('success');
-    }, 2000);
+  const handleCopyUpi = async () => {
+    try {
+      await navigator.clipboard.writeText(UPI_ID);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = UPI_ID;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
-  const handleCopyUpi = () => {
-    navigator.clipboard.writeText('subzagency@upi');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleOpenUpiApp = () => {
+    const upiLink = `upi://pay?pa=${UPI_ID}&pn=SubzAgency&am=${packagePriceAmount}&cu=INR&tn=${encodeURIComponent(`SubzAgency - ${packageName}`)}`;
+    window.open(upiLink, '_blank');
+  };
+
+  const handleIHavePaid = () => {
+    const message = generateWhatsAppMessage();
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+    setStep('success');
   };
 
   const handleClose = () => {
@@ -110,12 +126,11 @@ Please confirm my order!`;
       email: '',
       requirements: '',
     });
-    setPaymentMethod('qr');
     onClose();
   };
 
   const inputClass =
-    'w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground placeholder:text-gray-500 transition-all duration-300 focus:outline-none focus:border-neon-green/50 focus:ring-2 focus:ring-neon-green/20';
+    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-foreground placeholder:text-gray-500 transition-all duration-300 focus:outline-none focus:border-neon-green/50 focus:ring-2 focus:ring-neon-green/20';
 
   return (
     <AnimatePresence>
@@ -123,47 +138,61 @@ Please confirm my order!`;
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
           />
 
-          {/* Modal */}
+          {/* Modal Container */}
           <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="glass-strong relative w-full max-w-lg overflow-hidden rounded-2xl"
+              className="relative w-full max-w-md overflow-hidden rounded-2xl sm:rounded-3xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(15,15,35,0.95), rgba(10,10,26,0.98))',
+                backdropFilter: 'blur(40px)',
+                border: '1px solid rgba(57,255,20,0.15)',
+                boxShadow: '0 0 40px rgba(57,255,20,0.08), 0 0 80px rgba(0,240,255,0.04), 0 25px 50px rgba(0,0,0,0.5)',
+              }}
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Animated neon border glow */}
+              <div
+                className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(57,255,20,0.1), transparent, rgba(0,240,255,0.1))',
+                  backgroundSize: '200% 200%',
+                  animation: 'gradient-shift 4s ease infinite',
+                }}
+              />
+
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+              <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6 sm:py-5">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground">
+                  <h3 className="text-lg font-bold text-foreground sm:text-xl">
                     {step === 'form' && 'Complete Your Order'}
                     {step === 'payment' && 'Secure Payment'}
                     {step === 'success' && 'Order Confirmed!'}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    <span className="text-neon-green font-semibold">{packageName}</span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    <span className="font-semibold text-neon-green">{packageName}</span>
                     {' — '}
-                    <span className="font-semibold" style={{ color: '#00f0ff' }}>
-                      {packagePrice}
-                    </span>
+                    <span className="font-semibold text-neon-cyan">{packagePrice}</span>
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-white/10 hover:text-foreground"
                   aria-label="Close"
                 >
                   <X size={18} />
@@ -171,7 +200,7 @@ Please confirm my order!`;
               </div>
 
               {/* Content */}
-              <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+              <div className="relative max-h-[75vh] overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
                 <AnimatePresence mode="wait">
                   {/* ===== FORM STEP ===== */}
                   {step === 'form' && (
@@ -184,61 +213,61 @@ Please confirm my order!`;
                       exit={{ opacity: 0, x: 20 }}
                     >
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <input
                           type="text"
                           required
                           placeholder="Full Name *"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className={`${inputClass} pl-10`}
+                          className={`${inputClass} pl-11`}
                         />
                       </div>
 
                       <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        <Building2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <input
                           type="text"
                           required
                           placeholder="Business Name *"
                           value={formData.businessName}
                           onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                          className={`${inputClass} pl-10`}
+                          className={`${inputClass} pl-11`}
                         />
                       </div>
 
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <input
                           type="tel"
                           required
                           placeholder="Phone Number *"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={`${inputClass} pl-10`}
+                          className={`${inputClass} pl-11`}
                         />
                       </div>
 
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                         <input
                           type="email"
                           required
                           placeholder="Email Address *"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={`${inputClass} pl-10`}
+                          className={`${inputClass} pl-11`}
                         />
                       </div>
 
                       <div className="relative">
-                        <FileText className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                        <FileText className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
                         <textarea
                           rows={3}
                           placeholder="Project Requirements (optional)"
                           value={formData.requirements}
                           onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                          className={`${inputClass} resize-none pl-10`}
+                          className={`${inputClass} resize-none pl-11`}
                         />
                       </div>
 
@@ -246,7 +275,7 @@ Please confirm my order!`;
                         type="submit"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full rounded-lg bg-neon-green py-3 text-sm font-semibold text-deep-black transition-shadow hover:shadow-[0_0_25px_rgba(57,255,20,0.4)]"
+                        className="w-full rounded-xl bg-neon-green py-3.5 text-sm font-bold text-deep-black transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
                       >
                         {isCustomQuote ? 'Contact Us on WhatsApp' : 'Proceed to Payment'}
                       </motion.button>
@@ -262,133 +291,152 @@ Please confirm my order!`;
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                     >
-                      {/* Payment Method Tabs */}
-                      <div className="flex gap-2 rounded-xl bg-white/5 p-1">
-                        {[
-                          { id: 'qr' as const, label: 'Scan QR', icon: QrCode },
-                          { id: 'upi' as const, label: 'UPI Pay', icon: Smartphone },
-                          { id: 'razorpay' as const, label: 'Razorpay', icon: CreditCard },
-                        ].map((tab) => (
-                          <button
-                            key={tab.id}
-                            onClick={() => setPaymentMethod(tab.id)}
-                            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-medium transition-all ${
-                              paymentMethod === tab.id
-                                ? 'bg-neon-green/10 text-neon-green shadow-[0_0_10px_rgba(57,255,20,0.1)]'
-                                : 'text-gray-400 hover:text-foreground'
-                            }`}
+                      {/* QR Code Section */}
+                      <div className="flex flex-col items-center gap-4">
+                        {/* Scan to Pay label */}
+                        <div className="flex items-center gap-2">
+                          <QrCode size={18} className="text-neon-green" />
+                          <span className="text-sm font-semibold text-foreground uppercase tracking-wider">
+                            Scan To Pay
+                          </span>
+                        </div>
+
+                        {/* Real QR Code Image */}
+                        <div
+                          className="relative rounded-2xl overflow-hidden"
+                          style={{
+                            background: 'white',
+                            padding: '12px',
+                            boxShadow: '0 0 30px rgba(57,255,20,0.1), 0 0 60px rgba(0,240,255,0.05)',
+                          }}
+                        >
+                          <Image
+                            src="/payment-qr.jpg"
+                            alt="Scan QR code to pay via UPI"
+                            width={200}
+                            height={200}
+                            className="rounded-lg"
+                            style={{
+                              maxWidth: '200px',
+                              maxHeight: '200px',
+                              width: '100%',
+                              height: 'auto',
+                            }}
+                            priority
+                          />
+                        </div>
+
+                        {/* Amount Display */}
+                        <div
+                          className="w-full rounded-xl p-4 text-center"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(57,255,20,0.05), rgba(0,240,255,0.05))',
+                            border: '1px solid rgba(57,255,20,0.15)',
+                          }}
+                        >
+                          <p className="text-xs text-muted-foreground mb-1">Amount to Pay</p>
+                          <p
+                            className="text-3xl font-extrabold"
+                            style={{
+                              color: '#39ff14',
+                              textShadow: '0 0 20px rgba(57,255,20,0.3)',
+                            }}
                           >
-                            <tab.icon size={14} />
-                            {tab.label}
-                          </button>
-                        ))}
+                            {packagePrice}
+                          </p>
+                        </div>
                       </div>
 
-                      {/* QR Code */}
-                      {paymentMethod === 'qr' && (
-                        <div className="flex flex-col items-center gap-4 py-4">
-                          {/* QR Code Placeholder */}
-                          <div className="relative rounded-xl bg-white p-3">
-                            <div className="grid grid-cols-11 gap-0.5" style={{ width: 180, height: 180 }}>
-                              {Array.from({ length: 121 }).map((_, i) => {
-                                const row = Math.floor(i / 11);
-                                const col = i % 11;
-                                const isCorner = (row < 3 && col < 3) || (row < 3 && col > 7) || (row > 7 && col < 3);
-                                const isBorder = row === 0 || row === 10 || col === 0 || col === 10;
-                                const isCenter = row >= 4 && row <= 6 && col >= 4 && col <= 6;
-                                const filled = isCorner || isCenter || (isBorder && (row + col) % 2 === 0) || ((row + col) % 3 === 0 && !isBorder);
-                                return (
-                                  <div
-                                    key={i}
-                                    className="rounded-[1px]"
-                                    style={{
-                                      width: 16,
-                                      height: 16,
-                                      backgroundColor: filled ? '#050510' : '#ffffff',
-                                    }}
-                                  />
-                                );
-                              })}
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-sm font-medium text-foreground">Scan To Pay</p>
-                            <p className="text-xs text-muted-foreground mt-1">Use any UPI app to scan</p>
-                          </div>
-                          <div className="glass w-full rounded-lg p-3 text-center">
-                            <p className="text-xs text-muted-foreground">Amount</p>
-                            <p className="text-2xl font-bold text-neon-green">{packagePrice}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* UPI Payment */}
-                      {paymentMethod === 'upi' && (
-                        <div className="flex flex-col items-center gap-4 py-4">
-                          <div className="glass w-full rounded-lg p-4 text-center space-y-3">
-                            <p className="text-xs text-muted-foreground">UPI ID</p>
-                            <p className="text-lg font-mono font-semibold text-neon-cyan">subzagency@upi</p>
-                            <button
-                              onClick={handleCopyUpi}
-                              className="inline-flex items-center gap-2 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5 px-4 py-2 text-xs font-medium text-neon-cyan transition-all hover:bg-neon-cyan/10"
-                            >
-                              {copied ? <Check size={14} /> : <Copy size={14} />}
-                              {copied ? 'Copied!' : 'Copy UPI ID'}
-                            </button>
-                          </div>
-                          <div className="glass w-full rounded-lg p-3 text-center">
-                            <p className="text-xs text-muted-foreground">Amount</p>
-                            <p className="text-2xl font-bold text-neon-green">{packagePrice}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Razorpay */}
-                      {paymentMethod === 'razorpay' && (
-                        <div className="flex flex-col items-center gap-4 py-4">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Shield size={16} className="text-neon-green" />
-                            <span>Secure Payment</span>
-                          </div>
-                          <div className="glass w-full rounded-lg p-3 text-center">
-                            <p className="text-xs text-muted-foreground">Amount</p>
-                            <p className="text-2xl font-bold text-neon-green">{packagePrice}</p>
-                          </div>
-                          <button
-                            onClick={handlePaymentComplete}
-                            disabled={processing}
-                            className="w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 disabled:opacity-50"
-                          >
-                            {processing ? (
-                              <span className="flex items-center justify-center gap-2">
-                                <motion.span
-                                  animate={{ rotate: 360 }}
-                                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                  className="inline-block h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
-                                />
-                                Processing...
-                              </span>
-                            ) : (
-                              'Pay Now'
-                            )}
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Completed Payment Button for QR/UPI */}
-                      {paymentMethod !== 'razorpay' && (
-                        <button
-                          onClick={handlePaymentComplete}
-                          className="w-full rounded-lg bg-neon-green py-3 text-sm font-semibold text-deep-black transition-shadow hover:shadow-[0_0_25px_rgba(57,255,20,0.4)]"
+                      {/* UPI ID Section */}
+                      <div
+                        className="rounded-xl p-4 text-center"
+                        style={{
+                          background: 'rgba(0,240,255,0.03)',
+                          border: '1px solid rgba(0,240,255,0.12)',
+                        }}
+                      >
+                        <p className="text-xs text-muted-foreground mb-2">UPI ID</p>
+                        <p className="text-lg font-mono font-bold text-neon-cyan mb-3 break-all">
+                          {UPI_ID}
+                        </p>
+                        <motion.button
+                          onClick={handleCopyUpi}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
+                          className="inline-flex items-center gap-2 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5 px-5 py-2.5 text-xs font-semibold text-neon-cyan transition-all duration-300 hover:bg-neon-cyan/10 hover:shadow-[0_0_15px_rgba(0,240,255,0.15)]"
                         >
-                          I&apos;ve Completed the Payment
-                        </button>
-                      )}
+                          {copied ? <Check size={14} /> : <Copy size={14} />}
+                          {copied ? 'Copied!' : 'Copy UPI ID'}
+                        </motion.button>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="space-y-3">
+                        {/* Open UPI App */}
+                        <motion.button
+                          onClick={handleOpenUpiApp}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-neon-cyan/30 bg-neon-cyan/10 py-3.5 text-sm font-semibold text-neon-cyan transition-all duration-300 hover:bg-neon-cyan/15 hover:shadow-[0_0_20px_rgba(0,240,255,0.2)]"
+                        >
+                          <Smartphone size={18} />
+                          Open UPI App
+                        </motion.button>
+
+                        {/* I Have Paid */}
+                        <motion.button
+                          onClick={handleIHavePaid}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-neon-green py-3.5 text-sm font-bold text-deep-black transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
+                        >
+                          <CheckCircle2 size={18} />
+                          I Have Paid
+                        </motion.button>
+
+                        {/* Contact on WhatsApp */}
+                        <motion.button
+                          onClick={() => {
+                            const msg = generateWhatsAppMessage();
+                            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 py-3.5 text-sm font-semibold text-green-400 transition-all duration-300 hover:bg-green-500/15 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+                        >
+                          <MessageCircle size={18} />
+                          Contact on WhatsApp
+                        </motion.button>
+                      </div>
+
+                      {/* Razorpay Coming Soon Badge */}
+                      <div className="flex justify-center">
+                        <div
+                          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2"
+                          style={{
+                            background: 'rgba(168,85,247,0.06)',
+                            border: '1px solid rgba(168,85,247,0.15)',
+                            boxShadow: '0 0 15px rgba(168,85,247,0.05)',
+                          }}
+                        >
+                          <Sparkles size={12} className="text-neon-purple" />
+                          <span className="text-xs font-medium text-neon-purple/80">
+                            Razorpay Integration Coming Soon
+                          </span>
+                          <Shield size={10} className="text-neon-purple/50" />
+                        </div>
+                      </div>
+
+                      {/* Security notice */}
+                      <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground/60">
+                        <Shield size={12} />
+                        <span>Secured by UPI • 256-bit encryption</span>
+                      </div>
 
                       {/* Back button */}
                       <button
                         onClick={() => setStep('form')}
-                        className="w-full rounded-lg border border-white/10 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        className="w-full rounded-xl border border-white/10 py-2.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground hover:border-white/20"
                       >
                         Back to Details
                       </button>
@@ -399,7 +447,7 @@ Please confirm my order!`;
                   {step === 'success' && (
                     <motion.div
                       key="success"
-                      className="flex flex-col items-center gap-5 py-6"
+                      className="flex flex-col items-center gap-5 py-4"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                     >
@@ -413,13 +461,19 @@ Please confirm my order!`;
                       </motion.div>
 
                       <div className="text-center">
-                        <h4 className="text-xl font-bold text-neon-green">Payment Successful!</h4>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          Thank you, {formData.name}! We&apos;ll get back to you shortly.
+                        <h4 className="text-xl font-bold text-neon-green">Order Submitted!</h4>
+                        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                          Thank you, {formData.name}! We&apos;ve received your order and will get back to you shortly.
                         </p>
                       </div>
 
-                      <div className="glass w-full rounded-lg p-4 space-y-2">
+                      <div
+                        className="w-full rounded-xl p-4 space-y-3"
+                        style={{
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                        }}
+                      >
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Package</span>
                           <span className="font-medium text-foreground">{packageName}</span>
@@ -432,13 +486,17 @@ Please confirm my order!`;
                           <span className="text-muted-foreground">Business</span>
                           <span className="text-foreground">{formData.businessName}</span>
                         </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Email</span>
+                          <span className="text-foreground">{formData.email}</span>
+                        </div>
                       </div>
 
                       <a
                         href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(generateWhatsAppMessage())}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-3 text-sm font-semibold text-white transition-all hover:bg-green-500"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-green-500 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]"
                       >
                         <MessageCircle size={18} />
                         Chat on WhatsApp
@@ -446,7 +504,7 @@ Please confirm my order!`;
 
                       <button
                         onClick={handleClose}
-                        className="w-full rounded-lg border border-white/10 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        className="w-full rounded-xl border border-white/10 py-2.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground hover:border-white/20"
                       >
                         Close
                       </button>
