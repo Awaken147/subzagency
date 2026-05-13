@@ -285,7 +285,7 @@
   color: #fff;
 }
 
-/* Marquee animation */
+/* Marquee animation (desktop only) */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -307,4 +307,12 @@
 .marquee-container:hover .marquee-track,
 .marquee-container:hover .marquee-track-reverse {
   animation-play-state: paused;
+}
+
+/* Mobile swipeable carousel — momentum + snap */
+@media (max-width: 767px) {
+  .marquee-track,
+  .marquee-track-reverse {
+    animation: none !important;
+  }
 }

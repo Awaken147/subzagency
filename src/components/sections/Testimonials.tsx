@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+import { useMemo, useRef, useSyncExternalStore } from 'react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import ScrollReveal from '@/components/effects/ScrollReveal';
 
 interface Testimonial {
@@ -80,15 +79,21 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+/* ------------------------------------------------------------------ */
+/*  Shared Testimonial Card                                            */
+/* ------------------------------------------------------------------ */
+function TestimonialCard({ testimonial, variant }: { testimonial: Testimonial; variant: 'mobile' | 'desktop' }) {
+  const isMobile = variant === 'mobile';
+
   return (
-    <motion.div
-      className="glass group relative m-2 min-w-[340px] max-w-[400px] shrink-0 overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02]"
+    <div
+      className={`glass group relative shrink-0 overflow-hidden rounded-2xl transition-transform duration-300 ${
+        isMobile
+          ? 'w-[85vw] max-w-[340px] snap-center'
+          : 'm-2 min-w-[340px] max-w-[400px] hover:scale-[1.02]'
+      }`}
       style={{
         border: `1px solid rgba(255,255,255,0.06)`,
-      }}
-      whileHover={{
-        boxShadow: `0 0 25px ${testimonial.color}1A, inset 0 0 25px ${testimonial.color}0D`,
       }}
     >
       {/* Subtle gradient accent at top */}
@@ -99,33 +104,35 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         }}
       />
 
-      {/* Hover border glow */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          border: `1px solid ${testimonial.color}40`,
-        }}
-      />
+      {/* Hover border glow (desktop only) */}
+      {!isMobile && (
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            border: `1px solid ${testimonial.color}40`,
+          }}
+        />
+      )}
 
       {/* Content */}
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-5 sm:p-6">
         {/* Quote icon */}
-        <div className="mb-4 text-5xl font-serif leading-none" style={{ color: testimonial.color, opacity: 0.6 }}>
+        <div className="mb-3 text-4xl font-serif leading-none sm:mb-4 sm:text-5xl" style={{ color: testimonial.color, opacity: 0.6 }}>
           &ldquo;
         </div>
 
         {/* Review text */}
-        <p className="mb-5 text-sm leading-relaxed text-white/90">
+        <p className="mb-4 text-sm leading-relaxed text-white/90 sm:mb-5">
           {testimonial.text}
         </p>
 
         {/* Star rating */}
-        <div className="mb-4 flex gap-1">
+        <div className="mb-3 flex gap-1 sm:mb-4">
           {Array.from({ length: testimonial.rating }).map((_, i) => (
             <Star
               key={i}
-              size={14}
-              className="fill-yellow-400 text-yellow-400"
+              size={13}
+              className="fill-yellow-400 text-yellow-400 sm:size-[14px]"
             />
           ))}
         </div>
@@ -134,7 +141,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         <div className="flex items-center gap-3">
           {/* Avatar with initials */}
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold sm:h-10 sm:w-10 sm:text-sm"
             style={{
               background: `${testimonial.color}15`,
               color: testimonial.color,
@@ -149,16 +156,118 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-export default function Testimonials() {
+/* ------------------------------------------------------------------ */
+/*  Mobile Swipeable Carousel                                          */
+/* ------------------------------------------------------------------ */
+function MobileCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollByCard = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const cardWidth = scrollRef.current.querySelector('.shrink-0')?.clientWidth ?? 300;
+    const gap = 16;
+    const offset = direction === 'left' ? -(cardWidth + gap) : (cardWidth + gap);
+    scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative">
+      {/* Scroll container */}
+      <div
+        ref={scrollRef}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-5 pb-2 no-scrollbar"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x',
+        }}
+      >
+        {testimonials.map((t, i) => (
+          <TestimonialCard key={`mobile-${i}`} testimonial={t} variant="mobile" />
+        ))}
+      </div>
+
+      {/* Navigation arrows — small, minimal */}
+      <div className="mt-4 flex items-center justify-center gap-3">
+        <button
+          onClick={() => scrollByCard('left')}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-foreground active:scale-95"
+          aria-label="Previous review"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        {/* Dot indicators */}
+        <div className="flex gap-1.5">
+          {testimonials.map((_, i) => (
+            <div
+              key={i}
+              className="h-1 w-1 rounded-full bg-white/20"
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => scrollByCard('right')}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-foreground active:scale-95"
+          aria-label="Next review"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Desktop Marquee Carousel                                           */
+/* ------------------------------------------------------------------ */
+function DesktopMarquee() {
   const topRow = useMemo(() => testimonials.slice(0, 4), []);
   const bottomRow = useMemo(() => testimonials.slice(4, 8), []);
 
   return (
-    <section id="testimonials" className="relative overflow-hidden py-24 sm:py-32">
+    <div className="marquee-container space-y-4">
+      {/* Top Row - scrolls left */}
+      <div className="overflow-hidden no-scrollbar">
+        <div className="marquee-track flex">
+          {[...topRow, ...topRow, ...topRow, ...topRow].map((t, i) => (
+            <TestimonialCard key={`top-${i}`} testimonial={t} variant="desktop" />
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Row - scrolls right */}
+      <div className="overflow-hidden no-scrollbar">
+        <div className="marquee-track-reverse flex">
+          {[...bottomRow, ...bottomRow, ...bottomRow, ...bottomRow].map((t, i) => (
+            <TestimonialCard key={`bottom-${i}`} testimonial={t} variant="desktop" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main Testimonials Section                                          */
+/* ------------------------------------------------------------------ */
+export default function Testimonials() {
+  // useSyncExternalStore — the correct React 18+ way to read browser APIs during render
+  const isMobile = useSyncExternalStore(
+    (callback) => {
+      window.addEventListener('resize', callback, { passive: true });
+      return () => window.removeEventListener('resize', callback);
+    },
+    () => window.innerWidth < 768,
+    () => false, // SSR: always desktop
+  );
+
+  return (
+    <section id="testimonials" className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
       {/* Subtle particle dots */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[10%] top-[20%] h-1 w-1 rounded-full bg-neon-purple/30" />
@@ -166,44 +275,29 @@ export default function Testimonials() {
         <div className="absolute left-[25%] bottom-[30%] h-1 w-1 rounded-full bg-neon-green/25" />
         <div className="absolute right-[20%] bottom-[20%] h-1 w-1 rounded-full bg-neon-purple/20" />
         <div className="absolute left-[50%] top-[15%] h-1.5 w-1.5 rounded-full bg-neon-cyan/15" />
-        <div className="absolute left-[70%] bottom-[40%] h-1 w-1 rounded-full bg-neon-orange/20" />
+        <div className="absolute left-[70%] bottom-[40%] h-1 w-1.5 rounded-full bg-neon-orange/20" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal>
-          <div className="mb-16 text-center">
-            <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-widest text-neon-purple">
+          <div className="mb-10 text-center sm:mb-16">
+            <span className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-neon-purple sm:mb-4 sm:text-sm">
               Testimonials
             </span>
-            <h2 className="text-4xl font-bold sm:text-5xl">
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
               What Our Clients{' '}
               <span className="gradient-text">Say</span>
             </h2>
           </div>
         </ScrollReveal>
 
-        {/* Carousel - 2 rows on desktop, 1 on mobile */}
-        <div className="marquee-container space-y-4">
-          {/* Top Row - scrolls left */}
-          <div className="overflow-hidden no-scrollbar">
-            <div className="marquee-track flex">
-              {/* Duplicate for seamless loop */}
-              {[...topRow, ...topRow, ...topRow, ...topRow].map((t, i) => (
-                <TestimonialCard key={`top-${i}`} testimonial={t} />
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom Row - scrolls right */}
-          <div className="overflow-hidden no-scrollbar">
-            <div className="marquee-track-reverse flex">
-              {[...bottomRow, ...bottomRow, ...bottomRow, ...bottomRow].map((t, i) => (
-                <TestimonialCard key={`bottom-${i}`} testimonial={t} />
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* Mobile: Swipeable carousel | Desktop: Marquee auto-scroll */}
+        {isMobile ? (
+          <MobileCarousel />
+        ) : (
+          <DesktopMarquee />
+        )}
       </div>
     </section>
   );
