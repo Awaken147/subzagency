@@ -114,6 +114,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       <motion.div
         ref={cardRef}
         className="glass relative overflow-hidden rounded-2xl"
+        role="article"
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
@@ -182,10 +183,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </div>
 
           {/* Title */}
-          <h3 className="mb-2 text-xl font-bold text-white">{project.name}</h3>
+          <h3 className="mb-2 text-xl font-bold text-white" itemProp="name">{project.name}</h3>
 
           {/* Description */}
-          <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="mb-4 text-sm leading-relaxed text-muted-foreground" itemProp="description">
             {project.description}
           </p>
 
@@ -227,7 +228,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
 export default function Projects() {
   return (
-    <section id="projects" className="relative py-24 sm:py-32">
+    <section id="projects" itemScope itemType="https://schema.org/CreativeWork" aria-labelledby="projects-heading" aria-label="Our portfolio projects" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal>
@@ -235,7 +236,7 @@ export default function Projects() {
             <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-widest text-neon-orange">
               Our Work
             </span>
-            <h2 className="text-4xl font-bold sm:text-5xl">
+            <h2 id="projects-heading" className="text-4xl font-bold sm:text-5xl">
               Projects That{' '}
               <span className="gradient-text">Speak Results</span>
             </h2>
@@ -251,7 +252,7 @@ export default function Projects() {
       </div>
 
       {/* Infinite Marquee */}
-      <div className="marquee-container mt-20 overflow-hidden">
+      <div className="marquee-container mt-20 overflow-hidden" aria-label="Client industries served" role="marquee">
         <div className="glass-strong py-4">
           <div className="marquee-track flex whitespace-nowrap">
             {[0, 1].map((set) => (

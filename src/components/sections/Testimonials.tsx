@@ -122,12 +122,12 @@ function TestimonialCard({ testimonial, variant }: { testimonial: Testimonial; v
         </div>
 
         {/* Review text */}
-        <p className="mb-4 text-sm leading-relaxed text-white/90 sm:mb-5">
+        <p className="mb-4 text-sm leading-relaxed text-white/90 sm:mb-5" itemProp="reviewBody">
           {testimonial.text}
         </p>
 
         {/* Star rating */}
-        <div className="mb-3 flex gap-1 sm:mb-4">
+        <div className="mb-3 flex gap-1 sm:mb-4" itemProp="reviewRating">
           {Array.from({ length: testimonial.rating }).map((_, i) => (
             <Star
               key={i}
@@ -151,7 +151,7 @@ function TestimonialCard({ testimonial, variant }: { testimonial: Testimonial; v
             {getInitials(testimonial.name)}
           </div>
           <div>
-            <p className="text-sm font-bold text-white">{testimonial.name}</p>
+            <p className="text-sm font-bold text-white" itemProp="name">{testimonial.name}</p>
             <p className="text-xs text-muted-foreground">{testimonial.role}</p>
           </div>
         </div>
@@ -201,11 +201,13 @@ function MobileCarousel() {
         </button>
 
         {/* Dot indicators */}
-        <div className="flex gap-1.5">
+            <div className="flex gap-1.5">
           {testimonials.map((_, i) => (
-            <div
+            <button
               key={i}
               className="h-1 w-1 rounded-full bg-white/20"
+              aria-label={`Go to testimonial ${i + 1}`}
+              aria-current={i === 0 ? 'true' : undefined}
             />
           ))}
         </div>
@@ -267,7 +269,7 @@ export default function Testimonials() {
   );
 
   return (
-    <section id="testimonials" className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+    <section id="testimonials" itemScope itemType="https://schema.org/Review" aria-labelledby="testimonials-heading" className="relative overflow-hidden py-16 sm:py-24 lg:py-32">
       {/* Subtle particle dots */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[10%] top-[20%] h-1 w-1 rounded-full bg-neon-purple/30" />
@@ -285,7 +287,7 @@ export default function Testimonials() {
             <span className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-neon-purple sm:mb-4 sm:text-sm">
               Testimonials
             </span>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+            <h2 id="testimonials-heading" className="text-3xl font-bold sm:text-4xl lg:text-5xl">
               What Our Clients{' '}
               <span className="gradient-text">Say</span>
             </h2>
@@ -293,11 +295,13 @@ export default function Testimonials() {
         </ScrollReveal>
 
         {/* Mobile: Swipeable carousel | Desktop: Marquee auto-scroll */}
+        <div aria-live="polite">
         {isMobile ? (
           <MobileCarousel />
         ) : (
           <DesktopMarquee />
         )}
+        </div>
       </div>
     </section>
   );

@@ -2,11 +2,11 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SubzAgency — Cinematic 3D Websites That Sell",
+    name: "SubzAgency — Premium 3D Website Design & AI Automation",
     short_name: "SubzAgency",
     description:
-      "Ultra-premium cinematic 3D websites for businesses. Based in Gangtok, Sikkim, India.",
-    start_url: "/",
+      "Ultra-premium cinematic 3D websites and AI automation for businesses. Based in Gangtok, Sikkim, India.",
+    start_url: "https://subzagency.online",
     display: "standalone",
     background_color: "#050510",
     theme_color: "#7c3aed",

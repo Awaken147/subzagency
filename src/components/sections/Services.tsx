@@ -106,6 +106,9 @@ export default function Services() {
   return (
     <section
       id="services"
+      itemScope
+      itemType="https://schema.org/Service"
+      aria-labelledby="services-heading"
       className="relative py-24 sm:py-32 overflow-hidden"
       style={{
         background:
@@ -127,7 +130,7 @@ export default function Services() {
           <span className="inline-block text-neon-cyan uppercase tracking-widest text-sm font-medium mb-4 text-glow-cyan">
             Our Services
           </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h2 id="services-heading" className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
             What We{' '}
             <span className="gradient-text">Build</span>
           </h2>
@@ -162,6 +165,7 @@ export default function Services() {
                       >
                         <Icon
                           size={28}
+                          aria-hidden="true"
                           style={{
                             color: service.neonColor,
                             filter: iconGlowMap[service.neonColor],
@@ -170,12 +174,12 @@ export default function Services() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-white font-bold text-lg sm:text-xl leading-tight">
+                      <h3 className="text-white font-bold text-lg sm:text-xl leading-tight" itemProp="name">
                         {service.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-muted-foreground text-sm leading-relaxed">
+                      <p className="text-muted-foreground text-sm leading-relaxed" itemProp="description">
                         {service.description}
                       </p>
                     </div>

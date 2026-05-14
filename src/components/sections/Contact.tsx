@@ -154,7 +154,7 @@ export default function Contact() {
     }`;
 
   return (
-    <section id="contact" className="relative py-24 sm:py-32">
+    <section id="contact" aria-label="Contact SubzAgency" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal className="mb-12 text-center sm:mb-16">
@@ -258,6 +258,7 @@ export default function Contact() {
                 Send us a Message
               </h3>
 
+              <div aria-live="polite" aria-atomic="true">
               <AnimatePresence mode="wait">
                 {/* ===== SUCCESS STATE ===== */}
                 {submitState === 'success' && (
@@ -353,6 +354,7 @@ export default function Contact() {
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <input
+                        id="contact-name"
                         type="text"
                         required
                         placeholder="Name"
@@ -365,7 +367,7 @@ export default function Contact() {
                         className={`${inputClass('name')} pl-10`}
                         disabled={submitState === 'sending'}
                       />
-                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                      <label htmlFor="contact-name" className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
                         Your Name
                       </label>
                     </div>
@@ -374,6 +376,7 @@ export default function Contact() {
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <input
+                        id="contact-email"
                         type="email"
                         required
                         placeholder="Email"
@@ -386,7 +389,7 @@ export default function Contact() {
                         className={`${inputClass('email')} pl-10`}
                         disabled={submitState === 'sending'}
                       />
-                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                      <label htmlFor="contact-email" className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
                         Email Address
                       </label>
                     </div>
@@ -395,6 +398,7 @@ export default function Contact() {
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <input
+                        id="contact-phone"
                         type="tel"
                         placeholder="Phone"
                         value={formData.phone}
@@ -406,7 +410,7 @@ export default function Contact() {
                         className={`${inputClass('phone')} pl-10`}
                         disabled={submitState === 'sending'}
                       />
-                      <label className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
+                      <label htmlFor="contact-phone" className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:text-neon-green">
                         Phone Number
                       </label>
                     </div>
@@ -423,6 +427,7 @@ export default function Contact() {
                             setFormData({ ...formData, businessType: value })
                           }
                           disabled={submitState === 'sending'}
+                          aria-label="Select business type"
                         >
                           <SelectTrigger className="w-full border-0 bg-transparent pl-10 text-sm text-foreground focus:ring-0 focus:outline-none">
                             <SelectValue placeholder="Select Business Type" />
@@ -441,9 +446,11 @@ export default function Contact() {
                     {/* Message */}
                     <div className="relative">
                       <textarea
+                        id="contact-message"
                         required
                         rows={4}
                         placeholder="Tell us about your project..."
+                        aria-label="Your message"
                         value={formData.message}
                         onChange={(e) =>
                           setFormData({ ...formData, message: e.target.value })
@@ -498,6 +505,7 @@ export default function Contact() {
                   </motion.form>
                 )}
               </AnimatePresence>
+              </div>
             </div>
           </ScrollReveal>
         </div>

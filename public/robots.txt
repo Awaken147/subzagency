@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /api/
-
-Sitemap: https://subzagency.com/sitemap.xml
-
-# SubzAgency - Premium 3D Web Agency Gangtok Sikkim India
-# Cinematic Website Design | 3D Website Development

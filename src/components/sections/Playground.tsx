@@ -30,14 +30,14 @@ export default function Playground() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <section id="playground" className="relative py-24 sm:py-32">
+    <section id="playground" aria-labelledby="playground-heading" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal className="mb-12 text-center sm:mb-16">
           <span className="mb-4 inline-block text-sm font-medium uppercase tracking-widest text-neon-cyan text-glow-cyan">
             Interactive Playground
           </span>
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <h2 id="playground-heading" className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
             Experience the{' '}
             <span className="gradient-text">Future</span>
           </h2>
@@ -49,7 +49,7 @@ export default function Playground() {
         {/* Tab Switcher */}
         <ScrollReveal delay={0.2}>
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2 sm:mb-8">
-            <div className="glass-strong flex flex-wrap items-center gap-1 rounded-xl p-1.5 sm:gap-2 sm:p-2">
+            <div className="glass-strong flex flex-wrap items-center gap-1 rounded-xl p-1.5 sm:gap-2 sm:p-2" role="tablist" aria-label="Playground demos">
               {tabs.map((tab, index) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === index;
@@ -57,6 +57,10 @@ export default function Playground() {
                   <button
                     key={tab.label}
                     onClick={() => setActiveTab(index)}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`playground-panel-${index}`}
+                    id={`playground-tab-${index}`}
                     className={`relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors duration-300 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm ${
                       isActive
                         ? 'text-neon-green text-glow-green'
@@ -91,7 +95,7 @@ export default function Playground() {
         {/* 3D Canvas Area */}
         <ScrollReveal delay={0.3}>
           <div className="glass overflow-hidden rounded-2xl border border-white/5">
-            <div className="relative min-h-[400px] sm:min-h-[500px]">
+            <div className="relative min-h-[400px] sm:min-h-[500px]" aria-label={`Interactive 3D demo canvas showing ${tabs[activeTab].label}`} role="img">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -100,6 +104,9 @@ export default function Playground() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                   className="absolute inset-0"
+                  role="tabpanel"
+                  id={`playground-panel-${activeTab}`}
+                  aria-labelledby={`playground-tab-${activeTab}`}
                 >
                   <Suspense
                     fallback={

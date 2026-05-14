@@ -316,3 +316,57 @@
     animation: none !important;
   }
 }
+
+/* ===== Performance SEO Optimizations ===== */
+
+/* GPU acceleration for animated elements */
+.marquee-track,
+.marquee-track-reverse,
+.aurora-bg,
+.animated-grid,
+[class*="ParticleField"] canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Off-screen content optimization for sections */
+section[id] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* GPU compositing for glass cards */
+.glass,
+.glass-strong {
+  contain: layout style paint;
+}
+
+/* Reduce paint on scroll — isolate animated elements */
+[class*="GlowCard"],
+[class*="ScrollReveal"] {
+  transform: translateZ(0);
+}
+
+/* Smooth scrolling with reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Image optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* CLS prevention — reserve space for fonts */
+body {
+  font-display: swap;
+}

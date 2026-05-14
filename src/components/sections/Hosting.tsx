@@ -99,14 +99,14 @@ export default function Hosting() {
   };
 
   return (
-    <section id="hosting" className="relative py-24 sm:py-32">
+    <section id="hosting" aria-labelledby="hosting-heading" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal className="mb-12 text-center sm:mb-16">
           <span className="mb-4 inline-block text-sm font-medium uppercase tracking-widest text-neon-purple" style={{ textShadow: '0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3)' }}>
             Hosting &amp; Maintenance
           </span>
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <h2 id="hosting-heading" className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
             Keep Your Website Running{' '}
             <span className="gradient-text">Perfectly</span>
           </h2>

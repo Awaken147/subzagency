@@ -662,7 +662,7 @@ export default function CheckoutModal({
                               width: '100%',
                               height: 'auto',
                             }}
-                            priority
+                            loading="lazy"
                           />
                         </div>
 

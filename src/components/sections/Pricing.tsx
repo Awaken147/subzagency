@@ -165,7 +165,7 @@ function PricingCard({
       >
         {/* Badge — OUTSIDE GlowCard to avoid overflow-hidden clipping */}
         {plan.badge && (
-          <div className="absolute -top-3 right-3 sm:right-4 z-30">
+          <div className="absolute -top-3 right-3 sm:right-4 z-30" aria-hidden="true">
             <span
               className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider"
               style={{
@@ -207,7 +207,7 @@ function PricingCard({
           } ${plan.scaleUp ? 'sm:pb-10' : ''}`}
         >
           {/* Plan Name */}
-          <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 leading-tight pr-16 sm:pr-20">
+          <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 leading-tight pr-16 sm:pr-20" itemProp="name">
             {plan.name}
           </h3>
 
@@ -219,9 +219,12 @@ function PricingCard({
                 color: plan.neonAccent,
                 textShadow: `0 0 20px ${plan.neonAccent}40, 0 0 40px ${plan.neonAccent}20`,
               }}
+              itemProp="price"
+              content={String(plan.priceAmount)}
             >
               {plan.price}
             </span>
+            <meta itemProp="priceCurrency" content="INR" />
             {plan.priceSubtext && (
               <p className="text-muted-foreground text-xs sm:text-sm mt-1">
                 {plan.priceSubtext}
@@ -240,7 +243,7 @@ function PricingCard({
           />
 
           {/* Features */}
-          <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+          <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8" itemProp="description">
             {plan.features.map((feature) => (
               <li key={feature.text} className="flex items-start gap-2 sm:gap-3">
                 <Check
@@ -261,6 +264,7 @@ function PricingCard({
             onClick={() => onGetStarted(plan)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
+            aria-label={`Get Started with ${plan.name}`}
             className={`block w-full text-center py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 cursor-pointer ${
               plan.buttonStyle === 'filled'
                 ? 'text-deep-black'
@@ -308,6 +312,9 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
+      itemScope
+      itemType="https://schema.org/OfferCatalog"
+      aria-labelledby="pricing-heading"
       className="relative py-16 sm:py-24 lg:py-32 overflow-hidden"
       style={{
         backgroundImage:
@@ -344,7 +351,7 @@ export default function Pricing() {
           <span className="inline-block text-neon-green uppercase tracking-widest text-xs sm:text-sm font-medium mb-3 sm:mb-4 text-glow-green">
             Pricing
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6">
+          <h2 id="pricing-heading" className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6">
             Invest in Your{' '}
             <span className="gradient-text">Digital Future</span>
           </h2>

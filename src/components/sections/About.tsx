@@ -70,6 +70,10 @@ export default function About() {
   return (
     <section
       id="about"
+      itemScope
+      itemType="https://schema.org/AboutPage"
+      aria-labelledby="about-heading"
+      aria-label="About SubzAgency — premium web development studio based in Gangtok, Sikkim"
       className="relative py-24 sm:py-32"
       style={{
         background:
@@ -87,6 +91,7 @@ export default function About() {
 
           <ScrollReveal delay={0.1}>
             <h2
+              id="about-heading"
               className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl [font-family:var(--font-space-grotesk)]"
             >
               Where Innovation Meets{' '}
@@ -140,10 +145,10 @@ export default function About() {
           <div className="glass-strong mx-auto max-w-3xl rounded-2xl p-8 text-center sm:p-10">
             <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
               Based in the heart of{' '}
-              <span className="text-neon-green text-glow-green font-semibold">
+              <span className="text-neon-green text-glow-green font-semibold" itemProp="addressRegion">
                 Gangtok, Sikkim
               </span>
-              , SubzAgency is a premium web development studio specializing in{' '}
+              , <span itemProp="name">SubzAgency</span> is a premium web development studio specializing in{' '}
               <span className="text-neon-cyan text-glow-cyan font-semibold">
                 cinematic 3D websites
               </span>

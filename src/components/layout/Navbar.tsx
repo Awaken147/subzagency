@@ -62,6 +62,7 @@ export default function Navbar() {
   return (
     <>
       <nav
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? 'glass-strong shadow-lg shadow-black/20'
@@ -73,6 +74,7 @@ export default function Navbar() {
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, '#home')}
+            aria-current="page"
             className="flex items-center gap-1 text-lg font-bold tracking-tight sm:text-2xl"
           >
             <span className="text-glow-green text-[#39ff14]">Subz</span>

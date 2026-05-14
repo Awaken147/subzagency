@@ -4,12 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, HelpCircle } from 'lucide-react';
 import ScrollReveal from '@/components/effects/ScrollReveal';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from '@/components/ui/accordion';
 
 const faqs = [
   {
@@ -76,7 +70,10 @@ function FAQItem({
         }`}
       >
         <button
+          id={`faq-heading-${index}`}
           onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={`faq-content-${index}`}
           className="flex w-full items-center justify-between px-5 py-4 text-left sm:px-6 sm:py-5"
         >
           <div className="flex items-center gap-3">
@@ -113,7 +110,12 @@ function FAQItem({
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <div className="border-t border-white/5 px-5 py-4 sm:px-6 sm:py-5">
+              <div
+                id={`faq-content-${index}`}
+                role="region"
+                aria-labelledby={`faq-heading-${index}`}
+                className="border-t border-white/5 px-5 py-4 sm:px-6 sm:py-5"
+              >
                 <p className="pl-7 text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {faq.answer}
                 </p>
@@ -134,7 +136,7 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="relative py-24 sm:py-32">
+    <section id="faq" itemScope itemType="https://schema.org/FAQPage" aria-label="Frequently Asked Questions" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal className="mb-12 text-center sm:mb-16">
@@ -160,17 +162,7 @@ export default function FAQ() {
           ))}
         </div>
 
-        {/* Hidden shadcn Accordion for semantic/accessibility fallback (not rendered) */}
-        <div className="hidden">
-          <Accordion type="single" collapsible>
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger>{faq.question}</AccordionTrigger>
-                <AccordionContent>{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+
       </div>
     </section>
   );

@@ -224,6 +224,7 @@ export default function Hero() {
   return (
     <section
       id="home"
+      aria-label="Hero section — SubzAgency cinematic 3D websites"
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
       {/* ---- Background layers ---- */}
@@ -248,6 +249,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-20 text-center sm:px-6 lg:px-8">
         {/* Main heading */}
         <motion.h1
+          itemProp="name"
           className="mb-6 font-bold tracking-tight [font-family:var(--font-space-grotesk)] flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
           style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}
           variants={containerVariants}
@@ -281,6 +283,7 @@ export default function Hero() {
 
         {/* Subheading */}
         <motion.p
+          itemProp="description"
           className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
           variants={fadeUp(1.0)}
           initial="hidden"
